@@ -7,6 +7,9 @@ void updateGL();
 void idle();
 void keyboardEvent(unsigned char key, int x, int y);
 
+std::vector<Vertex> vertexList;
+std::vector<int> indexList;
+
 int main (int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -28,6 +31,7 @@ int main (int argc, char **argv) {
   fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
   
   // load "HelloOpenGL.obj" file here using loadObjFile(...) //
+  loadObjFile("HelloOpenGL.obj", vertexList, indexList);
   
   glutMainLoop();
   
@@ -50,6 +54,7 @@ void updateGL() {
   gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
   
   // now render your imported object using renderVertexArray(...) //
+  renderVertexArray(vertexList, indexList);
   
   glutSwapBuffers();
 }
