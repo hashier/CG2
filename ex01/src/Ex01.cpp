@@ -1,5 +1,6 @@
 #include "Ex01.h"
 #include "ObjLoader.h"
+#include <iostream>
 
 void initGL();
 void resizeGL(int w, int h);
@@ -53,6 +54,9 @@ void updateGL() {
   glLoadIdentity();
   gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
   
+
+  std::cout << vertexList.size() << " " << indexList.size() << std::endl;
+
   // now render your imported object using renderVertexArray(...) //
   renderVertexArray(vertexList, indexList);
   

@@ -11,12 +11,12 @@ void loadObjFile(const char *fileName, std::vector<Vertex> &vertexList, std::vec
   // see 'http://en.wikipedia.org/wiki/Wavefront_.obj_file' for specifications
   vertexList.clear();
   indexList.clear();
-  
+
   // now open file
   std::fstream in;
   in.open(fileName, std::ios::in);
   if(in.bad() || in.fail())  {
-    std::cerr << "Could not open file " << *fileName << std::endl;
+    std::cerr << "Could not open file " << fileName << std::endl;
     return;
   }
 
@@ -47,11 +47,15 @@ void parseOBJLine(const std::string& line, std::vector<Vertex> &vertexList, std:
     unsigned int index;
     iss >> index;
     indexList.push_back(index);
+    iss >> index;
+    indexList.push_back(index);
+    iss >> index;
+    indexList.push_back(index);
   }
 }
 
 Vertex parseVertex(std::istringstream& iss) {
   float x, y ,z;
   iss >> x >> y >> z;
-  return Vertex(x,y,z);
+  return Vertex( x-1, y-1, z-1);
 }
