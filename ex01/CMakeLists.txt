@@ -1,5 +1,5 @@
 # choose a title for yout project
-PROJECT( exe1 )
+PROJECT( exe01 )
 
 # check for minimum requirements (do not change this)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0)
