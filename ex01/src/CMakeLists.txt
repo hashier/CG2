@@ -13,4 +13,5 @@ target_link_libraries(ex01
     ${OpenGL_LIBRARIES}
     ${GLUT_LIBRARIES}
     ${GLEW_LIBRARIES}
+    ${GL_LIBRARY}
     )

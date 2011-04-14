@@ -18,6 +18,9 @@ FIND_PACKAGE(GLEW REQUIRED)
 FIND_PACKAGE(GLUT REQUIRED)
 
 
+FIND_LIBRARY(GL_LIBRARY NAMES OpenGL)
+
+
 # setup the executable output path here
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -25,12 +28,16 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 # setup your include directories here
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    /opt/local/var/macports/software/glew/1.5.8_0/opt/local/include
+    /usr/X11/include
     )
 
 
 # setup your link directories for additional libraries here
 link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    /opt/local/var/macports/software/glew/1.5.8_0/opt/local/lib
+    /usr/X11/lib
     )
 
 
