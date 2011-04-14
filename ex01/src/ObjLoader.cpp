@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <cassert>
 
 void parseOBJLine(const std::string&, std::vector<Vertex>&, std::vector<int>&);
 Vertex parseVertex(std::istringstream&);
+unsigned int parseFace(std::istringstream&, std::vector<int>&);
 
 void loadObjFile(const char *fileName, std::vector<Vertex> &vertexList, std::vector<int> &indexList) {
   // TODO: implement .obj parser here
@@ -44,18 +46,28 @@ void parseOBJLine(const std::string& line, std::vector<Vertex> &vertexList, std:
     vertexList.push_back(v);
   } else if (key == "f") {
     // parse face //
-    unsigned int index;
-    iss >> index;
-    indexList.push_back(index);
-    iss >> index;
-    indexList.push_back(index);
-    iss >> index;
-    indexList.push_back(index);
+    unsigned int max_index = parseFace(iss, indexList);
+    assert(max_index <= vertexList.size());
   }
 }
 
 Vertex parseVertex(std::istringstream& iss) {
   float x, y ,z;
   iss >> x >> y >> z;
-  return Vertex( x-1, y-1, z-1);
+  return Vertex(x, y, z);
+}
+
+
+unsigned int parseFace(std::istringstream& iss, std::vector<int>& indexList) {
+  unsigned int index = 0;
+  unsigned int max_index = 0;
+  for (unsigned int i = 0; i < 3; i++) {
+    iss >> index;
+    assert(index > 0);
+    // eigentlich nur für das debuggen
+    if (index > max_index)
+      max_index = index;
+    indexList.push_back(index-1);
+  }
+  return max_index;
 }
