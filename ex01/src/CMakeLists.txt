@@ -10,7 +10,7 @@ add_executable(ex01 Ex01.cpp ObjLoader.cpp)
 #  - GLEW libraries -> use ${GLEW_LIBRARIES}
 target_link_libraries(ex01
     openGLTools
-    ${OPENGL_LIBRARIES}
+    ${OpenGL_LIBRARIES}
     ${GLUT_LIBRARIES}
     ${GLEW_LIBRARIES}
     ${GL_LIBRARY}
