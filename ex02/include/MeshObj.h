@@ -30,6 +30,7 @@ struct Vertex {
 class MeshObj {
   public:
     MeshObj();
+    MeshObj(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData);
     ~MeshObj();
     
     void setData(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData);

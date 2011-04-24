@@ -11,6 +11,10 @@ MeshObj::MeshObj() {
   }
 }
 
+MeshObj::MeshObj(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData) {
+  setData(vertexData, indexData);
+}
+
 MeshObj::~MeshObj() {
   mVertexData.clear();
   mIndexData.clear();
@@ -44,10 +48,11 @@ void MeshObj::render(void) {
   for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end();) {
     glBegin(GL_TRIANGLES);
     for (unsigned int i = 0; i < 3; i++) {
-      glVertex3f((*it)[0], (*it)[1], (*it)[2]);
+      Vertex v = mVertexData[*it];
+      glVertex3f(v.position[0], v.position[1], v.position[2]);
       it++;
     }
-    glEnd(GL_TRIANGLES);
+    glEnd();
   }
 }
 

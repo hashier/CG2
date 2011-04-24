@@ -14,6 +14,12 @@ class ObjLoader {
     MeshObj* getMeshObj(std::string ID);
   private:
     std::map<std::string, MeshObj*> mMeshMap;
+
+    MeshObj * createMeshObj(std::string fileName);
+    void loadObjFile(const char *, std::vector<Vertex>&, std::vector<int>&);
+    void parseOBJLine(const std::string&, std::vector<Vertex>&, std::vector<int>&);
+    Vertex parseVertex(std::istringstream&);
+    unsigned int parseFace(std::istringstream&, std::vector<int>&);
 };
 
 #endif
