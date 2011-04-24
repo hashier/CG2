@@ -41,16 +41,27 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
 void MeshObj::render(void) {
   // render the data stored in this object //
   // - use glBegin(GL_TRIANGLES) ... glEnd() to render every triangle indexed by the mIndexData list //
+  for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end();) {
+    glBegin(GL_TRIANGLES);
+    for (unsigned int i = 0; i < 3; i++) {
+      glVertex3f((*it)[0], (*it)[1], (*it)[2]);
+      it++;
+    }
+    glEnd(GL_TRIANGLES);
+  }
 }
 
 float MeshObj::getWidth(void) {
   // TODO: return the width of the current mesh here //
+  return mMaxBounds[0] - mMinBounds[0];
 }
 
 float MeshObj::getHeight(void) {
   // TODO: return the height of the current mesh here //
+  return mMaxBounds[1] - mMinBounds[1];
 }
 
 float MeshObj::getDepth(void) {
   // TODO: return the depth of the current mesh here //
+  return mMaxBounds[2] - mMinBounds[2];
 }
