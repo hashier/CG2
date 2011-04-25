@@ -45,15 +45,15 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
 void MeshObj::render(void) {
   // render the data stored in this object //
   // - use glBegin(GL_TRIANGLES) ... glEnd() to render every triangle indexed by the mIndexData list //
+  glBegin(GL_TRIANGLES);
   for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end();) {
-    glBegin(GL_TRIANGLES);
     for (unsigned int i = 0; i < 3; i++) {
       Vertex v = mVertexData[*it];
       glVertex3f(v.position[0], v.position[1], v.position[2]);
       it++;
     }
-    glEnd();
   }
+  glEnd();
 }
 
 float MeshObj::getWidth(void) {
