@@ -170,16 +170,18 @@ void renderTextFile(const char *fileName) {
   std::string line;
   unsigned int zeilennummer = 0;
   while (!in.eof()) {
+    std::cout << "zeilennummer: " << zeilennummer << std::endl;
     std::getline(in, line);
     std::istringstream iss(line);
     unsigned int zeichennummer = 0;
     char zeichen;
     glPushMatrix();
     while (!iss.eof()) {
+      std::cout << "zeichennummer: " << zeichennummer << std::endl;
       iss >> zeichen;
       glPushMatrix();
       // in zeile und spalte gehen
-      glTranslatef(zeilennummer * 10, zeichennummer * 10,0);
+      glTranslatef(zeilennummer * 10, zeichennummer * 10,-10);
       // TODO matthias kann den namen ändern
       std::string dick_uppercase_string(1, toupper(zeichen));
       // zeichen anzeigen
