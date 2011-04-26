@@ -8,6 +8,9 @@
 #include <fstream>
 #include <sstream>
 
+#include <locale>
+#include <string>
+
 #include "MeshObj.h"
 #include "ObjLoader.h"
 #include "Trackball.h"
@@ -106,7 +109,8 @@ void updateGL() {
   // TODO: use your trackball to rotate the view here, i.e. call the rotateView() method of your trackball //
   
   // TODO: draw your text here //
-  
+  renderTextFile(fileName);
+
   // swap render buffer and screen buffer //
   glutSwapBuffers();
 }
@@ -156,4 +160,41 @@ void renderTextFile(const char *fileName) {
      - translate sideways by the last characters width
      - whenever a linebreak occurs, discard all previous translations
        and translate on the y-axis to begin a new line (hint: glPushMatrix(), glPopMatrix()) */
+  std::fstream in;
+  in.open(fileName, std::ios::in);
+  if (in.bad() || in.fail()) {
+    std::cout << "renderTextFile: Konnte Datei " << fileName << " nicht zum lesen öffnen\n";
+    return;
+  }
+
+  std::string line;
+  unsigned int zeilennummer = 0;
+  while (!in.eof()) {
+    std::getline(in, line);
+    std::istringstream iss(line);
+    unsigned int zeichennummer = 0;
+    char zeichen;
+    glPushMatrix();
+    while (!iss.eof()) {
+      iss >> zeichen;
+      glPushMatrix();
+      // in zeile und spalte gehen
+      glTranslatef(zeilennummer * 10, zeichennummer * 10,0);
+      // TODO matthias kann den namen ändern
+      std::string dick_uppercase_string(1, toupper(zeichen));
+      // zeichen anzeigen
+      // dateiname ist '_' + zeichen + ".obj"
+//      MeshObj * _meshobj = objLoader.getMeshObj(std::string(zeichen));
+      MeshObj * _meshobj = objLoader.getMeshObj(dick_uppercase_string);
+      if (_meshobj)
+        _meshobj->render();
+      else
+        std::cout << "renderTextFile: zeichen " << zeichen << " nicht da\n";
+      glPopMatrix();
+      zeichennummer++;
+    }
+    glPopMatrix();
+    zeilennummer++;
+  }
+  
 }
