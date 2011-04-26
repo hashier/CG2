@@ -12,8 +12,6 @@ MeshObj::MeshObj() {
 }
 
 MeshObj::MeshObj(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData) {
-  mVertexData.clear();
-  mIndexData.clear();
   for (int i = 0; i < 3; ++i) {
     mMinBounds[i] = std::numeric_limits<float>::max();
     mMaxBounds[i] = std::numeric_limits<float>::min();
@@ -41,11 +39,11 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
   // TODO: COPY the data from vertexData and indexData in own data vectors mVertexData and mIndexData //
   mVertexData.clear();
   mVertexData.resize(vertexData.size());
-  std::copy(vertexData.begin(), vertexData.begin(), mVertexData.begin());
+  std::copy(vertexData.begin(), vertexData.end(), mVertexData.begin());
 
   mIndexData.clear();
   mIndexData.resize(indexData.size());
-  std::copy(indexData.begin(), indexData.begin(), mIndexData.begin());
+  std::copy(indexData.begin(), indexData.end(), mIndexData.begin());
 }
 
 void MeshObj::render(void) {
@@ -55,6 +53,7 @@ void MeshObj::render(void) {
   for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++) {
       Vertex v = mVertexData[*it];
       glVertex3f(v.position[0], v.position[1], v.position[2]);
+//      std::cout << "Vertex ist an Stelle: " << v.position[0] << ", " << v.position[1] << ", " << v.position[2] << std::endl;
   }
   glEnd();
 }

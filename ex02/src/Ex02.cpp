@@ -10,6 +10,7 @@
 
 #include <locale>
 #include <string>
+#include <algorithm>
 
 #include "MeshObj.h"
 #include "ObjLoader.h"
@@ -56,6 +57,7 @@ int main (int argc, char **argv) {
   glutDisplayFunc(updateGL);
   glutIdleFunc(idle);
   // TODO: connect callback functions for keyboard and mouse events //
+  glutKeyboardFunc(keyboardEvent);
   
   initGL();
   
@@ -95,6 +97,7 @@ void initGL() {
   // set projection matrix //
   glMatrixMode(GL_PROJECTION);
   gluPerspective(45.0f, 1.0, 0.01f, 100.0f);
+
   // switch to model view mode used for transforming geometry //
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -107,8 +110,10 @@ void updateGL() {
   glLoadIdentity();
   
   // TODO: use your trackball to rotate the view here, i.e. call the rotateView() method of your trackball //
+//  glViewport(0, 0, (GLint)100, (GLint)100);
+  trackball.rotateView();
   
-  // TODO: draw your text here //
+  // draw your text here //
   renderTextFile(fileName);
 
   // swap render buffer and screen buffer //
@@ -139,6 +144,22 @@ void keyboardEvent(unsigned char key, int x, int y) {
       break;
     }
     // TODO: add code processing intended movement (forward, backward, left, right) and update the trackball accordingly //
+    case 'w': {
+      trackball.updateOffset(Trackball::MOVE_FORWARD);
+      break;
+    }
+    case 'a': {
+      trackball.updateOffset(Trackball::MOVE_LEFT);
+      break;
+    }
+    case 's': {
+      trackball.updateOffset(Trackball::MOVE_BACKWARD);
+      break;
+    }
+    case 'd': {
+      trackball.updateOffset(Trackball::MOVE_RIGHT);
+      break;
+    }
   }
   // tell OpenGL to redraw everything since the viewport has changed //
   glutPostRedisplay();
@@ -155,7 +176,6 @@ void mouseMoveEvent(int x, int y) {
 }
 
 void renderTextFile(const char *fileName) {
-  // TODO: read in and render a text file here //
   /* - use your .obj loader to get the mesh corresponding a given character and render it
      - translate sideways by the last characters width
      - whenever a linebreak occurs, discard all previous translations
@@ -170,32 +190,24 @@ void renderTextFile(const char *fileName) {
   std::string line;
   unsigned int zeilennummer = 0;
   while (!in.eof()) {
-    std::cout << "zeilennummer: " << zeilennummer << std::endl;
     std::getline(in, line);
-    std::istringstream iss(line);
-    unsigned int zeichennummer = 0;
-    char zeichen;
-    glPushMatrix();
-    while (!iss.eof()) {
-      std::cout << "zeichennummer: " << zeichennummer << std::endl;
-      iss >> zeichen;
+    for (unsigned int zeichennummer = 0; zeichennummer < line.length(); zeichennummer++) {
+      // zeichen holen und nach groß umwandeln
+      std::string zeichen = line.substr(zeichennummer, 1);
+      zeichen[0] = toupper(zeichen[0]);
+      if (zeichen == " ")
+        continue;
       glPushMatrix();
       // in zeile und spalte gehen
-      glTranslatef(zeilennummer * 10, zeichennummer * 10,-10);
-      // TODO matthias kann den namen ändern
-      std::string dick_uppercase_string(1, toupper(zeichen));
-      // zeichen anzeigen
-      // dateiname ist '_' + zeichen + ".obj"
-//      MeshObj * _meshobj = objLoader.getMeshObj(std::string(zeichen));
-      MeshObj * _meshobj = objLoader.getMeshObj(dick_uppercase_string);
+      glTranslatef(1.5f * zeichennummer, 10 - zeilennummer * 2, 0);
+      // zeichen darstellen
+      MeshObj * _meshobj = objLoader.getMeshObj(zeichen);
       if (_meshobj)
         _meshobj->render();
       else
         std::cout << "renderTextFile: zeichen " << zeichen << " nicht da\n";
       glPopMatrix();
-      zeichennummer++;
     }
-    glPopMatrix();
     zeilennummer++;
   }
   

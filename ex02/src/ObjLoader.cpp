@@ -44,7 +44,6 @@ MeshObj * ObjLoader::createMeshObj(std::string fileName) {
 }
 
 void ObjLoader::loadObjFile(const char *fileName, std::vector<Vertex> &vertexList, std::vector<unsigned int> &indexList) {
-  // TODO: implement .obj parser here
   // see 'http://en.wikipedia.org/wiki/Wavefront_.obj_file' for specifications
   vertexList.clear();
   indexList.clear();
@@ -67,7 +66,7 @@ void ObjLoader::loadObjFile(const char *fileName, std::vector<Vertex> &vertexLis
   // finished parsing file -> close fileStream
   in.close();
 
-  std::cerr << "Finished parsing." << std::endl;
+//  std::cerr << "Finished parsing." << std::endl;
 }
 
 void ObjLoader::parseOBJLine(const std::string& line, std::vector<Vertex> &vertexList, std::vector<unsigned int> &indexList)
