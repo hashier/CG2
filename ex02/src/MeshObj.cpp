@@ -12,6 +12,12 @@ MeshObj::MeshObj() {
 }
 
 MeshObj::MeshObj(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData) {
+  mVertexData.clear();
+  mIndexData.clear();
+  for (int i = 0; i < 3; ++i) {
+    mMinBounds[i] = std::numeric_limits<float>::max();
+    mMaxBounds[i] = std::numeric_limits<float>::min();
+  }
   setData(vertexData, indexData);
 }
 
@@ -46,12 +52,9 @@ void MeshObj::render(void) {
   // render the data stored in this object //
   // - use glBegin(GL_TRIANGLES) ... glEnd() to render every triangle indexed by the mIndexData list //
   glBegin(GL_TRIANGLES);
-  for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end();) {
-    for (unsigned int i = 0; i < 3; i++) {
+  for (std::vector<unsigned int>::iterator it = mIndexData.begin(); it != mIndexData.end(); it++) {
       Vertex v = mVertexData[*it];
       glVertex3f(v.position[0], v.position[1], v.position[2]);
-      it++;
-    }
   }
   glEnd();
 }
