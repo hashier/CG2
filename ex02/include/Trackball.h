@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 
 #define STEP_DISTANCE 0.05f
+#define PI 3.14159265f
 
 class Trackball {
   public:
@@ -26,6 +27,8 @@ class Trackball {
     float mLastTheta, mLastPhi;
     int mX, mY;
     MouseState mState;
+
+    void calcTarget(float *target);
 };
 
 #endif
