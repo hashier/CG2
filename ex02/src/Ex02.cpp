@@ -58,6 +58,8 @@ int main (int argc, char **argv) {
   glutIdleFunc(idle);
   // TODO: connect callback functions for keyboard and mouse events //
   glutKeyboardFunc(keyboardEvent);
+  glutMouseFunc(mouseEvent);
+  glutMotionFunc(mouseMoveEvent);
   
   initGL();
   
@@ -168,11 +170,20 @@ void keyboardEvent(unsigned char key, int x, int y) {
 void mouseEvent(int button, int state, int x, int y) {
   // this method is triggered whenever a mouse button is pressed or released //
   // TODO: forward events to the trackball //
+  if(state == GLUT_UP) {
+    trackball.updateMouseBtn(Trackball::NO_BTN, x, y);
+  }
+  else {
+    if(button == GLUT_LEFT_BUTTON) {
+      trackball.updateMouseBtn(Trackball::LEFT_BTN, x, y);
+    }
+  }
 }
 
 void mouseMoveEvent(int x, int y) {
   // this method is triggered whenever the mouse is moved //
   // TODO: forward movement to the trackball to control viewing changes //
+  trackball.updateMousePos(x, y);
 }
 
 void renderTextFile(const char *fileName) {

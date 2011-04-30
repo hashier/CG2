@@ -9,10 +9,10 @@ Trackball::Trackball() {
 Trackball::~Trackball() {}
 
 void Trackball::reset(void) { 
-  mViewOffset = {0.0f, 0.0f, 10.0f};
+  mViewOffset = {0.0f, 0.0f, 30.0f};
   mPhi = 0.0f;
   mLastPhi = mPhi;
-  mTheta = 0.0f;
+  mTheta = 3.14f;
   mLastTheta = mTheta;
   mX = 0;
   mY = 0;
@@ -21,6 +21,8 @@ void Trackball::reset(void) {
     
 void Trackball::updateMousePos(int x, int y) {
   // TODO: implement the angular update given by the current mouse position //
+  mTheta = mLastTheta + 0.001 * (x - mX);
+  mPhi = mLastPhi + 0.001 * (y - mY);
 }
 
 void Trackball::updateMouseBtn(MouseState state, int x, int y) {
@@ -28,10 +30,15 @@ void Trackball::updateMouseBtn(MouseState state, int x, int y) {
   switch (state) {
     case NO_BTN : {
       // TODO: when no button is pressed, i.e. a button has been released, store the current transformation, i.e. angles theta and phi //
+      // huh?!?
       break;
     }
     case LEFT_BTN : {
       // TODO: when the left button is pressed, store the current position for further movement computations //
+      mLastTheta = mTheta;
+      mLastPhi = mPhi;
+      mX = x;
+      mY = y;
       break;
     }
     case RIGHT_BTN : {
@@ -74,12 +81,22 @@ void Trackball::updateOffset(Motion motion) {
 void Trackball::rotateView(void) {
   // TODO: use gluLookAt(...) to set up the view for the current view offset and viewing angles //
   // 
-  float target[] = {10, 10, 0};
+  float target[] = {0.0f, 0.0f, 0.0f};
+  float radius = 10.0f;
+  /*
   target[1] = cos(mPhi) * target[1] - sin(mPhi) * target[2];
   target[2] = sin(mPhi) * target[1] + cos(mPhi) * target[2];
 
   target[0] = cos(mTheta) * target[0] + sin(mTheta) * target[2];
   target[2] = -sin(mTheta) * target[0] + cos(mTheta) * target[2];
+  */
+  target[0] = radius * cos(mPhi) * sin(mTheta) + mViewOffset[0];
+  target[1] = radius * sin(mPhi) + mViewOffset[1];
+  target[2] = radius * cos(mPhi) * cos(mTheta) + mViewOffset[2];
   
+  //std::cout << "mViewOffset: " << mViewOffset[0] << " | " << mViewOffset[1] << " | " << mViewOffset[2] << std::endl;
+  //std::cout << "target     : " << target[0] << " | " << target[1] << " | " << target [2] << std::endl;
+  //std::cout << "mPhi: " << mPhi << "  mTheta: " << mTheta << std::endl;
+
   gluLookAt(mViewOffset[0],mViewOffset[1],mViewOffset[2], target[0],target[1],target[2], 0,1,0);
 }
