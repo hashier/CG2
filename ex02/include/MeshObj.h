@@ -2,6 +2,7 @@
 #define __MESH_OBJ__
 
 #include <GL/glew.h>
+#include <glut.h>
 #include <GL/glut.h>
 
 #include <vector>

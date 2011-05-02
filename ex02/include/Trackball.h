@@ -2,6 +2,7 @@
 #define __TRACKBALL__
 
 #include <GL/glut.h>
+#include <glut.h>
 
 #define STEP_DISTANCE 0.05f
 #define PI 3.14159265f
