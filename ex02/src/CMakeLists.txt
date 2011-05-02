@@ -7,9 +7,8 @@ SET(Exercise02_SRC
 ADD_EXECUTABLE(ex02 ${Exercise02_SRC})
 
 target_link_libraries(ex02
-    ${OpenGL_LIBRARIES}
+    ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARIES}
     ${GLEW_LIBRARIES}
     ${GL_LIBRARY}
     )
-
