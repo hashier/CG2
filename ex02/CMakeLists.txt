@@ -12,7 +12,7 @@ SET(CMAKE_CXX_FLAGS "-Wall")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Define where your executables should be put
-#set(EXECUTABLE_OUTPUT_PATH ${Exercise02_SOURCE_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${Exercise02_SOURCE_DIR})
 
 # Add required packages (e.g. libraries)
 FIND_PACKAGE(OpenGL REQUIRED)
