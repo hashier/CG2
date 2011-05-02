@@ -5,4 +5,11 @@ SET(Exercise02_SRC
   Trackball.cpp
 )
 ADD_EXECUTABLE(ex02 ${Exercise02_SRC})
-TARGET_LINK_LIBRARIES(ex02 ${OpenGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
+
+target_link_libraries(ex02
+    ${OpenGL_LIBRARIES}
+    ${GLUT_LIBRARIES}
+    ${GLEW_LIBRARIES}
+    ${GL_LIBRARY}
+    )
+

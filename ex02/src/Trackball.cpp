@@ -9,7 +9,10 @@ Trackball::Trackball() {
 Trackball::~Trackball() {}
 
 void Trackball::reset(void) { 
-  mViewOffset = {0.0f, 0.0f, 30.0f};
+  //mViewOffset = {0.0f, 0.0f, 30.0f};
+  mViewOffset[0] = 0.0f;
+  mViewOffset[1] = 0.0f;
+  mViewOffset[2] = 30.0f;
   mPhi = 0.0f;
   mLastPhi = mPhi;
   mTheta = PI;
