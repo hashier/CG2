@@ -53,6 +53,7 @@ GLfloat red_ptr[] = {1, 0, 0, 1};
 GLfloat green_ptr[] = {0, 1, 0, 1};
 GLfloat blue_ptr[]= {1, 0, 0, 1};
 GLfloat yellow_ptr[] = {0, 1, 1, 1};
+GLfloat white_ptr[] = {1, 1, 1, 1};
 
 // lights //
 
@@ -124,14 +125,18 @@ void updateGL() {
   // render left viewport (actual camera view / 1st person camera) //
   
   // TODO: enable lighting and smooth rendering here //
+  glEnable(GL_LIGHTING);
+  glEnable(GL_SMOOTH);
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_FLAT);
   
   // TODO: setup the viewport for the 1st person camera view here -> use the left half of the window //
-  
+  glViewport(0, 0, viewportWidth, viewportHeight);  
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   // TODO: setup the camera's frustum here using gluPerspective (use the parameters fov, aspectRatio, zNear and zFar, which are already defined) //
-  gluPerspective(180, 16/10, 0, 10);
+  gluPerspective(fov, aspectRatio, zNear, zFar);
   // TODO: save the current projection matrix for later use when rendering the 3rd person view //
   
   glMatrixMode(GL_MODELVIEW);
@@ -144,27 +149,18 @@ void updateGL() {
   // enable lightsource 0 //
   // use the camera's own position to place the light in the scene //
   // load light properties from the definitions at the top of this file //
+  GLfloat position[] = {0, 0, 0, 1};
+  glLightfv(GL_LIGHT0, GL_POSITION, position);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, white_ptr);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_ptr);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, white_ptr);
+  glEnable(GL_LIGHT0);
+  
   
   // TODO: now rotate the view according to the camera's trackball //
   first_person_trackball.rotateView();
 
-/*
-  // TODO wieder entfernen, wenn es geht
-  glBegin(GL_TRIANGLES);
-  glVertex3f(10, 10, 5);
-  glVertex3f(0, 10, 5);
-  glVertex3f(-10, 0, 5);
-  glVertex3f(10, 10, -5);
-  glVertex3f(0, 10, -5);
-  glVertex3f(-10, 0, -5);
-  glVertex3f(-10, -10, -5);
-  glVertex3f(10, 10, -5);
-  glVertex3f(10, -10, -5);
-  glVertex3f(-10, -10, 5);
-  glVertex3f(10, 10, 5);
-  glVertex3f(10, -10, 5);
-  glEnd();
-*/
+
   
   // init light in world space (scene-fixed position) //
   // TODO: enable another light source here //
@@ -177,7 +173,6 @@ void updateGL() {
   
   // now we render the actual scene //
   renderScene();
-  
   
   // now that we are done rendering the left viewport let's continue with the right one //
   
@@ -224,7 +219,25 @@ void renderScene() {
   // 3rd Sphere at ( 0.000, 0.000,-5.196) //
   // 4th Sphere at ( 0.000, 4.905,-1.732) //
   // use a radius of 3 for all spheres, choose the stacks and slices parameters so that the spheres appear smooth //
-  // and use one of the previously defined materials for each sphere //
+
+ /**/
+  // TODO wieder entfernen, wenn es geht
+  glBegin(GL_TRIANGLES);
+  glVertex3f(10, 10, 5);
+  glVertex3f(0, 10, 5);
+  glVertex3f(-10, 0, 5);
+  glVertex3f(10, 10, -5);
+  glVertex3f(0, 10, -5);
+  glVertex3f(-10, 0, -5);
+  glVertex3f(-10, -10, -5);
+  glVertex3f(10, 10, -5);
+  glVertex3f(10, -10, -5);
+  glVertex3f(-10, -10, 5);
+  glVertex3f(10, 10, 5);
+  glVertex3f(10, -10, 5);
+  glEnd();
+/**/ // and use one of the previously defined materials for each sphere //
+
   GLdouble radius = 3.0;
   GLuint stacks = 1;
   GLuint slices = 1;
