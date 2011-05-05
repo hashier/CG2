@@ -27,13 +27,16 @@ void mouseMoveEvent(int x, int y);
 void invertRotTransMat(float *mat, float *inv);
 void invertProjectionMat(float *mat, float *inv);
 
-// TODO: implement the rendering of the scene below //
+// DONE: implement the rendering of the scene below //
 void renderScene();
 
 // these varables control the viewport size and the frustum parameters //
 GLint windowWidth, windowHeight;
 GLfloat zNear, zFar;
 GLfloat fov;
+
+// Trackball
+Trackball first_person_trackball;
 
 // TODO: create two separate trackballs here - one for the 1st person camera and one for the 3rd person camera //
 // you may initialize each trackball with an initial viewing direction and offset to (0,0,0) //
@@ -46,6 +49,10 @@ ObjLoader objLoader;
 
 // TODO: setup 4 different materials here //
 // define four different colored materials (e.g. red, green, blue and yellow) and try different parameters for ambient, specular and shininess exponent //
+GLfloat red_ptr[] = {1, 0, 0, 1};
+GLfloat green_ptr[] = {0, 1, 0, 1};
+GLfloat blue_ptr[]= {1, 0, 0, 1};
+GLfloat yellow_ptr[] = {0, 1, 1, 1};
 
 // lights //
 
@@ -124,6 +131,7 @@ void updateGL() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   // TODO: setup the camera's frustum here using gluPerspective (use the parameters fov, aspectRatio, zNear and zFar, which are already defined) //
+  gluPerspective(180, 16/10, 0, 10);
   // TODO: save the current projection matrix for later use when rendering the 3rd person view //
   
   glMatrixMode(GL_MODELVIEW);
@@ -138,6 +146,25 @@ void updateGL() {
   // load light properties from the definitions at the top of this file //
   
   // TODO: now rotate the view according to the camera's trackball //
+  first_person_trackball.rotateView();
+
+/*
+  // TODO wieder entfernen, wenn es geht
+  glBegin(GL_TRIANGLES);
+  glVertex3f(10, 10, 5);
+  glVertex3f(0, 10, 5);
+  glVertex3f(-10, 0, 5);
+  glVertex3f(10, 10, -5);
+  glVertex3f(0, 10, -5);
+  glVertex3f(-10, 0, -5);
+  glVertex3f(-10, -10, -5);
+  glVertex3f(10, 10, -5);
+  glVertex3f(10, -10, -5);
+  glVertex3f(-10, -10, 5);
+  glVertex3f(10, 10, 5);
+  glVertex3f(10, -10, 5);
+  glEnd();
+*/
   
   // init light in world space (scene-fixed position) //
   // TODO: enable another light source here //
@@ -191,13 +218,44 @@ void updateGL() {
 
 void renderScene() {
   // TODO: render your scene here //
-  // place four spheres at the following positions using 'glutSolidSphere(GLFloat radius, GLuint stacks, GLuint slices)'
+  // place four spheres at the following positions using 'glutSolidSphere(GLfloat radius, GLuint stacks, GLuint slices)'
   // 1st Sphere at (-3.000, 0.000, 0.000) //
   // 2nd Sphere at ( 3.000, 0.000, 0.000) //
   // 3rd Sphere at ( 0.000, 0.000,-5.196) //
   // 4th Sphere at ( 0.000, 4.905,-1.732) //
   // use a radius of 3 for all spheres, choose the stacks and slices parameters so that the spheres appear smooth //
   // and use one of the previously defined materials for each sphere //
+  GLdouble radius = 3.0;
+  GLuint stacks = 1;
+  GLuint slices = 1;
+
+  glPushMatrix();
+  glTranslatef(-3, 0, 0);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, red_ptr);
+  glutSolidSphere(radius, stacks, slices);
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(3, 0, 0);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, green_ptr);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, green_ptr);
+  glutSolidSphere(radius, stacks, slices);
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(0, 0, -5.196);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, blue_ptr);
+  glutSolidSphere(radius, stacks, slices);
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(0, 4.905, -1.732);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, yellow_ptr);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow_ptr);
+  glutSolidSphere(radius, stacks, slices);
+  glPopMatrix();
 }
 
 void idle() {
@@ -211,8 +269,9 @@ void resizeGL(int w, int h) {
 }
 
 void keyboardEvent(unsigned char key, int x, int y) {
-  Trackball *trackball;
+  Trackball *trackball = NULL;
   // TODO: determine, which trackball should be updated //
+  trackball = &first_person_trackball;
   switch (key) {
     case 'x':
     case 27 : {
@@ -271,8 +330,9 @@ void keyboardEvent(unsigned char key, int x, int y) {
 }
 
 void mouseEvent(int button, int state, int x, int y) {
-  Trackball *trackball;
+  Trackball *trackball = NULL;
   // TODO: determine, which trackball should be updated //
+  trackball = &first_person_trackball;
   Trackball::MouseState mouseState;
   if (state == GLUT_DOWN) {
     switch (button) {
@@ -293,8 +353,9 @@ void mouseEvent(int button, int state, int x, int y) {
 }
 
 void mouseMoveEvent(int x, int y) {
-  Trackball *trackball;
+  Trackball *trackball = NULL;
   // TODO: determine, which trackball should be updated //
+  trackball = &first_person_trackball;
   trackball->updateMousePos(x, y);
 }
 
