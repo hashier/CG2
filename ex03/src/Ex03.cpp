@@ -51,8 +51,8 @@ ObjLoader objLoader;
 // define four different colored materials (e.g. red, green, blue and yellow) and try different parameters for ambient, specular and shininess exponent //
 GLfloat red_ptr[] = {1, 0, 0, 1};
 GLfloat green_ptr[] = {0, 1, 0, 1};
-GLfloat blue_ptr[]= {1, 0, 0, 1};
-GLfloat yellow_ptr[] = {0, 1, 1, 1};
+GLfloat blue_ptr[]= {0, 0, 1, 1};
+GLfloat yellow_ptr[] = {1, 1, 0, 1};
 GLfloat white_ptr[] = {1, 1, 1, 1};
 
 // lights //
@@ -220,46 +220,28 @@ void renderScene() {
   // 4th Sphere at ( 0.000, 4.905,-1.732) //
   // use a radius of 3 for all spheres, choose the stacks and slices parameters so that the spheres appear smooth //
 
- /**/
-  // TODO wieder entfernen, wenn es geht
-  glBegin(GL_TRIANGLES);
-  glVertex3f(10, 10, 5);
-  glVertex3f(0, 10, 5);
-  glVertex3f(-10, 0, 5);
-  glVertex3f(10, 10, -5);
-  glVertex3f(0, 10, -5);
-  glVertex3f(-10, 0, -5);
-  glVertex3f(-10, -10, -5);
-  glVertex3f(10, 10, -5);
-  glVertex3f(10, -10, -5);
-  glVertex3f(-10, -10, 5);
-  glVertex3f(10, 10, 5);
-  glVertex3f(10, -10, 5);
-  glEnd();
-/**/ // and use one of the previously defined materials for each sphere //
-
   GLdouble radius = 3.0;
-  GLuint stacks = 1;
-  GLuint slices = 1;
+  GLuint stacks = 90;
+  GLuint slices = 90;
 
   glPushMatrix();
   glTranslatef(-3, 0, 0);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, blue_ptr);
+  glutSolidSphere(radius, stacks, slices);
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef(3, 0, 0);
   glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, red_ptr);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 
   glPushMatrix();
-  glTranslatef(3, 0, 0);
+  glTranslatef(0, 0, -5.196);
   glMaterialfv(GL_FRONT, GL_AMBIENT, green_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, green_ptr);
-  glutSolidSphere(radius, stacks, slices);
-  glPopMatrix();
-
-  glPushMatrix();
-  glTranslatef(0, 0, -5.196);
-  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, blue_ptr);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 
