@@ -233,7 +233,7 @@ void renderScene() {
 
   glPushMatrix();
   glTranslatef(-3, 0, 0);
-//  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, blue_ptr);
   glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
   glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
@@ -243,7 +243,7 @@ void renderScene() {
 
   glPushMatrix();
   glTranslatef(3, 0, 0);
-//  glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, red_ptr);
   glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
   glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
