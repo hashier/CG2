@@ -36,10 +36,11 @@ GLfloat zNear, zFar;
 GLfloat fov;
 
 // Trackball
-Trackball first_person_trackball;
 
-// TODO: create two separate trackballs here - one for the 1st person camera and one for the 3rd person camera //
+// DONE: create two separate trackballs here - one for the 1st person camera and one for the 3rd person camera //
 // you may initialize each trackball with an initial viewing direction and offset to (0,0,0) //
+Trackball first_person_trackball;
+Trackball third_person_trackball;
 
 // init objLoader //
 ObjLoader objLoader;
@@ -139,7 +140,8 @@ void updateGL() {
   glLoadIdentity();
   // DONE: setup the camera's frustum here using gluPerspective (use the parameters fov, aspectRatio, zNear and zFar, which are already defined) //
   gluPerspective(fov, aspectRatio, zNear, zFar);
-  // TODO: save the current projection matrix for later use when rendering the 3rd person view //
+  // DONE: save the current projection matrix for later use when rendering the 3rd person view //
+  glGetFloatv(GL_PROJECTION_MATRIX, projectionMatrix);
   
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -173,28 +175,33 @@ void updateGL() {
   glLightfv(GL_LIGHT1, GL_SPECULAR, red_camera_ambient_ptr);
   glEnable(GL_LIGHT1);
   
-  // TODO: save your current modelview matrix here //
+  // DONE: save your current modelview matrix here //
   glGetFloatv(GL_MODELVIEW_MATRIX, modelviewMatrix);
   
   // now we render the actual scene //
   renderScene();
   
   // now that we are done rendering the left viewport let's continue with the right one //
-  
-  // TODO: setup the viewport to the second half of the window //
+  // DONE: setup the viewport to the second half of the window //
+  glViewport(viewportWidth, 0, viewportWidth, viewportHeight);  
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  // TODO: again setup the 3rd person camera frustum here //
+  // DONE: again setup the 3rd person camera frustum here //
   // but instead of using the values fov, zNear and zFar, use an opening angle of 45 deg, a near plane at 0.1f and the far plane at 1000 //
   // this is because the parameters used above should control only the first viewport and not the world space preview //
+  gluPerspective(45, aspectRatio, 0.1f, 1000.0f);
   
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  // TODO: rotate your view using the world space trackball //
+  // DONE: rotate your view using the world space trackball //
+  third_person_trackball.rotateView();
+  // TODO objekte so drehen, dass man in der dritten person guckt
+  
   
   // render scene //
   // TODO: render the same scene with the exact same lighting (world-space lighting) as before //
+  renderScene();
   
   // render camera //
   // TODO: now, to visualize the 1st person camera's position in world space, render a MeshObj at the camera's position //
@@ -217,7 +224,7 @@ void updateGL() {
 }
 
 void renderScene() {
-  // TODO: render your scene here //
+  // DONE: render your scene here //
   // place four spheres at the following positions using 'glutSolidSphere(GLfloat radius, GLuint stacks, GLuint slices)'
   // 1st Sphere at (-3.000, 0.000, 0.000) //
   // 2nd Sphere at ( 3.000, 0.000, 0.000) //
@@ -282,10 +289,15 @@ void resizeGL(int w, int h) {
   glutPostRedisplay();
 }
 
+Trackball * getTrackball(int x) {
+  if (x < windowWidth/2)
+    return &first_person_trackball;
+  else
+    return &third_person_trackball;
+}
+
 void keyboardEvent(unsigned char key, int x, int y) {
-  Trackball *trackball = NULL;
-  // TODO: determine, which trackball should be updated //
-  trackball = &first_person_trackball;
+  Trackball *trackball = getTrackball(x);
   switch (key) {
     case 'x':
     case 27 : {
@@ -344,9 +356,7 @@ void keyboardEvent(unsigned char key, int x, int y) {
 }
 
 void mouseEvent(int button, int state, int x, int y) {
-  Trackball *trackball = NULL;
-  // TODO: determine, which trackball should be updated //
-  trackball = &first_person_trackball;
+  Trackball *trackball = getTrackball(x);
   Trackball::MouseState mouseState;
   if (state == GLUT_DOWN) {
     switch (button) {
@@ -367,9 +377,7 @@ void mouseEvent(int button, int state, int x, int y) {
 }
 
 void mouseMoveEvent(int x, int y) {
-  Trackball *trackball = NULL;
-  // TODO: determine, which trackball should be updated //
-  trackball = &first_person_trackball;
+  Trackball *trackball = getTrackball(x);
   trackball->updateMousePos(x, y);
 }
 
