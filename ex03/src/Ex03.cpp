@@ -49,11 +49,13 @@ ObjLoader objLoader;
 
 // TODO: setup 4 different materials here //
 // define four different colored materials (e.g. red, green, blue and yellow) and try different parameters for ambient, specular and shininess exponent //
-GLfloat red_ptr[] = {1, 0, 0, 1};
-GLfloat green_ptr[] = {0, 1, 0, 1};
-GLfloat blue_ptr[]= {0, 0, 1, 1};
-GLfloat yellow_ptr[] = {1, 1, 0, 1};
-GLfloat white_ptr[] = {1, 1, 1, 1};
+GLfloat red_ptr[] = {0.5, 0, 0, 1};
+GLfloat green_ptr[] = {0, 0.5, 0, 1};
+GLfloat blue_ptr[]= {0, 0, 0.5, 1};
+GLfloat yellow_ptr[] = {0.5, 0.5, 0, 1};
+GLfloat white_ptr[] = {0.5, 0.5, 0.5, 1};
+GLfloat white_camera_ambient_ptr[] = {0.1, 0.1, 0.1, 1};
+GLfloat red_camera_ambient_ptr[] = {0.1, 0, 0, 1};
 
 // lights //
 
@@ -124,18 +126,18 @@ void updateGL() {
   
   // render left viewport (actual camera view / 1st person camera) //
   
-  // TODO: enable lighting and smooth rendering here //
+  // DONE: enable lighting and smooth rendering here //
   glEnable(GL_LIGHTING);
   glEnable(GL_SMOOTH);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_FLAT);
   
-  // TODO: setup the viewport for the 1st person camera view here -> use the left half of the window //
+  // DONE: setup the viewport for the 1st person camera view here -> use the left half of the window //
   glViewport(0, 0, viewportWidth, viewportHeight);  
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  // TODO: setup the camera's frustum here using gluPerspective (use the parameters fov, aspectRatio, zNear and zFar, which are already defined) //
+  // DONE: setup the camera's frustum here using gluPerspective (use the parameters fov, aspectRatio, zNear and zFar, which are already defined) //
   gluPerspective(fov, aspectRatio, zNear, zFar);
   // TODO: save the current projection matrix for later use when rendering the 3rd person view //
   
@@ -143,30 +145,33 @@ void updateGL() {
   glLoadIdentity();
   
   // init light in camera space //
-  // TODO: init a light fixed to the camera's position here //
+  // DONE: init a light fixed to the camera's position here //
   // since we define the lights position 'before' any other transformations, the lights position //
   // will not be transformed by any following modelview transformations when arranging the scene //
   // enable lightsource 0 //
   // use the camera's own position to place the light in the scene //
   // load light properties from the definitions at the top of this file //
-  GLfloat position[] = {0, 0, 0, 1};
-  glLightfv(GL_LIGHT0, GL_POSITION, position);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, white_ptr);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_ptr);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, white_ptr);
+  GLfloat position_camera_light[] = {0, 0, 0, 1};
+  glLightfv(GL_LIGHT0, GL_POSITION, position_camera_light);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, white_camera_ambient_ptr);
+//  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_ptr);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, white_camera_ambient_ptr);
   glEnable(GL_LIGHT0);
   
-  
-  // TODO: now rotate the view according to the camera's trackball //
+  // DONE: now rotate the view according to the camera's trackball //
   first_person_trackball.rotateView();
-
-
   
   // init light in world space (scene-fixed position) //
-  // TODO: enable another light source here //
+  // DONE: enable another light source here //
   // this time the lightsource will be affected by the view-rotation of the camera //
   // and is therefore fixed in the observed scene //
   // use the position and light parameters of the second lightsource defined above //
+  GLfloat position_world_light[] = {10, 10, 10, 1};
+  glLightfv(GL_LIGHT1, GL_POSITION, position_world_light);
+  glLightfv(GL_LIGHT1, GL_AMBIENT, red_camera_ambient_ptr);
+//  glLightfv(GL_LIGHT1, GL_DIFFUSE, red_ptr);
+  glLightfv(GL_LIGHT1, GL_SPECULAR, red_camera_ambient_ptr);
+  glEnable(GL_LIGHT1);
   
   // TODO: save your current modelview matrix here //
   glGetFloatv(GL_MODELVIEW_MATRIX, modelviewMatrix);
@@ -223,18 +228,26 @@ void renderScene() {
   GLdouble radius = 3.0;
   GLuint stacks = 90;
   GLuint slices = 90;
+  GLfloat shininess[] = {100};
+  GLfloat emission[] = {0, 0, 0, 0};
 
   glPushMatrix();
   glTranslatef(-3, 0, 0);
-  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
+//  glMaterialfv(GL_FRONT, GL_AMBIENT, blue_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, blue_ptr);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
+  glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+  glMaterialfv(GL_FRONT, GL_EMISSION, emission);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 
   glPushMatrix();
   glTranslatef(3, 0, 0);
-  glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
+//  glMaterialfv(GL_FRONT, GL_AMBIENT, red_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, red_ptr);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
+  glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+  glMaterialfv(GL_FRONT, GL_EMISSION, emission);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 
@@ -242,6 +255,9 @@ void renderScene() {
   glTranslatef(0, 0, -5.196);
   glMaterialfv(GL_FRONT, GL_AMBIENT, green_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, green_ptr);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
+  glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+  glMaterialfv(GL_FRONT, GL_EMISSION, emission);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 
@@ -249,6 +265,9 @@ void renderScene() {
   glTranslatef(0, 4.905, -1.732);
   glMaterialfv(GL_FRONT, GL_AMBIENT, yellow_ptr);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow_ptr);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, white_ptr);
+  glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+  glMaterialfv(GL_FRONT, GL_EMISSION, emission);
   glutSolidSphere(radius, stacks, slices);
   glPopMatrix();
 }
