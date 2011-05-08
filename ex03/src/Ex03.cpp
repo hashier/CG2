@@ -203,7 +203,7 @@ void updateGL() {
   renderScene();
   
   // render camera //
-  // TODO: now, to visualize the 1st person camera's position in world space, render a MeshObj at the camera's position //
+  // DONE: now, to visualize the 1st person camera's position in world space, render a MeshObj at the camera's position //
   // hint: we have saved the camera's position relative to the scene in the modelview matrix //
   // -> make use of this matrix to place your camera model //
   // also: DISABLE any lighting from now on //
@@ -220,7 +220,6 @@ void updateGL() {
   // render frustum //
 //  GLfloat frustumCorners[8][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},
 //                                  {-1,-1, 1},{ 1,-1, 1},{ 1, 1, 1},{-1, 1, 1}};
-//                                   {1, 1, -1}};
   const unsigned int num_corners = 7*4;
   GLfloat frustumCorners[num_corners][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},{-1,-1,-1},
                                   {-1,-1, 1},{ -1,1, 1},{ -1, 1, -1},{-1, -1, -1},
