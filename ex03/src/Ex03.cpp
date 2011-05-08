@@ -48,21 +48,21 @@ MeshObj *camera;
 
 // materials //
 
-// TODO: setup 4 different materials here //
+// DONE: setup 4 different materials here //
 // define four different colored materials (e.g. red, green, blue and yellow) and try different parameters for ambient, specular and shininess exponent //
 GLfloat red_ptr[] = {0.5, 0, 0, 1};
 GLfloat green_ptr[] = {0, 0.5, 0, 1};
 GLfloat blue_ptr[]= {0, 0, 0.5, 1};
 GLfloat yellow_ptr[] = {0.5, 0.5, 0, 1};
 GLfloat white_ptr[] = {0.5, 0.5, 0.5, 1};
-GLfloat white_camera_ambient_ptr[] = {0.1, 0.1, 0.1, 1};
-GLfloat red_camera_ambient_ptr[] = {0.1, 0, 0, 1};
 
 // lights //
 
-// TODO: setup the colors of two lightsources here //
+// DONE: setup the colors of two lightsources here //
 // one lightsource will be placed at a static position so define it's position here, too //
 // create a white light source and a reddish one //
+GLfloat white_camera_ambient_ptr[] = {0.1, 0.1, 0.1, 1};
+GLfloat red_camera_ambient_ptr[] = {0.1, 0, 0, 1};
 
 int main (int argc, char **argv) {
   glutInit(&argc, argv);
@@ -197,11 +197,9 @@ void updateGL() {
   glLoadIdentity();
   // DONE: rotate your view using the world space trackball //
   third_person_trackball.rotateView();
-  // TODO objekte so drehen, dass man in der dritten person guckt
-  
   
   // render scene //
-  // TODO: render the same scene with the exact same lighting (world-space lighting) as before //
+  // DONE: render the same scene with the exact same lighting (world-space lighting) as before //
   renderScene();
   
   // render camera //
@@ -217,16 +215,36 @@ void updateGL() {
   glMultMatrixf(modelviewMatrix_inv);
   glColor3f(1.0, 0.0, 0.0);
   camera->render();
-  glPopMatrix();  
+//  glPopMatrix();  
   
   // render frustum //
-  GLfloat frustumCorners[8][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},
-                                  {-1,-1, 1},{ 1,-1, 1},{ 1, 1, 1},{-1, 1, 1}};
-  // TODO: now we want to render a visualization of our camera's frustum (the one used in the left viewport) //
+//  GLfloat frustumCorners[8][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},
+//                                  {-1,-1, 1},{ 1,-1, 1},{ 1, 1, 1},{-1, 1, 1}};
+//                                   {1, 1, -1}};
+  const unsigned int num_corners = 7*4;
+  GLfloat frustumCorners[num_corners][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},{-1,-1,-1},
+                                  {-1,-1, 1},{ -1,1, 1},{ -1, 1, -1},{-1, -1, -1},
+                                  {-1,-1, 1},{ 1,-1, 1},{ 1, -1, -1},{-1, -1, -1},
+                                  {1,-1, -1},{ 1,1, -1},{ 1, 1, 1},
+                                  {1,-1,1},{-1,-1,1},{-1,1,1},{1,1,1},
+                                  {1,1,-1},{-1,1,-1},{-1,1,1},{1,1,1},
+                                  {1,-1,1},{1,-1,-1},{1,1,-1},{1,1,1}};
+  // DONE: now we want to render a visualization of our camera's frustum (the one used in the left viewport) //
   // use the already given unit-cube given by frustumCorners to render GL_LINES for the frustums edges //
   // to transform the cube into the actual frustum you need to make use of the previously saved projection matrix //
   // hint: you also need the modelview matrix to place the frustum correctly (like you placed your camera model) //
   // after correct transformation render the edges of the frustum //
+  invertProjectionMat(projectionMatrix, projectionMatrix_inv);
+
+//  glPushMatrix();
+//  glMultMatrixf(modelviewMatrix_inv);
+  glMultMatrixf(projectionMatrix_inv);
+  glBegin(GL_LINE_STRIP);
+  for (unsigned int i = 0; i < num_corners; i++) {
+    glVertex3f(frustumCorners[i][0], frustumCorners[i][1], frustumCorners[i][2] );
+  }
+  glEnd();
+  glPopMatrix();
                                    
   // swap render and screen buffer //
   glutSwapBuffers();
