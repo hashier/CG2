@@ -202,6 +202,11 @@ void updateGL() {
   
   // render scene //
   // DONE: render the same scene with the exact same lighting (world-space lighting) as before //
+  invertRotTransMat(modelviewMatrix, modelviewMatrix_inv);
+  glPushMatrix();
+  glMultMatrixf(modelviewMatrix_inv);
+  glLightfv(GL_LIGHT0, GL_POSITION, position_camera_light);
+  glPopMatrix();
   renderScene();
   
   // render camera //
@@ -211,7 +216,6 @@ void updateGL() {
   // also: DISABLE any lighting from now on //
   // you may choose a plain color for the camera model //
   glDisable(GL_LIGHTING);
-  invertRotTransMat(modelviewMatrix, modelviewMatrix_inv);
 
   glPushMatrix();
   glMultMatrixf(modelviewMatrix_inv);
