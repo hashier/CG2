@@ -63,6 +63,8 @@ GLfloat white_ptr[] = {0.5, 0.5, 0.5, 1};
 // create a white light source and a reddish one //
 GLfloat white_camera_ambient_ptr[] = {0.1, 0.1, 0.1, 1};
 GLfloat red_camera_ambient_ptr[] = {0.1, 0, 0, 1};
+GLfloat white_camera_spec_ptr[] = {0.5, 0.5, 0.5, 1};
+GLfloat red_camera_spec_ptr[] = {0.5, 0, 0, 1};
 
 int main (int argc, char **argv) {
   glutInit(&argc, argv);
@@ -158,7 +160,7 @@ void updateGL() {
   glLightfv(GL_LIGHT0, GL_POSITION, position_camera_light);
   glLightfv(GL_LIGHT0, GL_AMBIENT, white_camera_ambient_ptr);
 //  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_ptr);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, white_camera_ambient_ptr);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, white_camera_spec_ptr);
   glEnable(GL_LIGHT0);
   
   // DONE: now rotate the view according to the camera's trackball //
@@ -173,7 +175,7 @@ void updateGL() {
   glLightfv(GL_LIGHT1, GL_POSITION, position_world_light);
   glLightfv(GL_LIGHT1, GL_AMBIENT, red_camera_ambient_ptr);
 //  glLightfv(GL_LIGHT1, GL_DIFFUSE, red_ptr);
-  glLightfv(GL_LIGHT1, GL_SPECULAR, red_camera_ambient_ptr);
+  glLightfv(GL_LIGHT1, GL_SPECULAR, red_camera_spec_ptr);
   glEnable(GL_LIGHT1);
   
   // DONE: save your current modelview matrix here //
