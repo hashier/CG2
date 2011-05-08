@@ -39,8 +39,8 @@ GLfloat fov;
 
 // DONE: create two separate trackballs here - one for the 1st person camera and one for the 3rd person camera //
 // you may initialize each trackball with an initial viewing direction and offset to (0,0,0) //
-Trackball first_person_trackball;
-Trackball third_person_trackball;
+Trackball first_person_trackball(0, 0, 10);
+Trackball third_person_trackball(0.25*3.14, 0.12*3.14, 30);
 
 // init objLoader //
 ObjLoader objLoader;
@@ -211,8 +211,9 @@ void updateGL() {
   // also: DISABLE any lighting from now on //
   // you may choose a plain color for the camera model //
   glDisable(GL_LIGHTING);
-  glPushMatrix();
   invertRotTransMat(modelviewMatrix, modelviewMatrix_inv);
+
+  glPushMatrix();
   glMultMatrixf(modelviewMatrix_inv);
   camera->render();
   glPopMatrix();  
