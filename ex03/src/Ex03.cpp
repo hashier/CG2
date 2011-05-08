@@ -215,6 +215,7 @@ void updateGL() {
 
   glPushMatrix();
   glMultMatrixf(modelviewMatrix_inv);
+  glColor3f(1.0, 0.0, 0.0);
   camera->render();
   glPopMatrix();  
   
