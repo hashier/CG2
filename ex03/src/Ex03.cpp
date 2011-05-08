@@ -44,7 +44,7 @@ Trackball third_person_trackball;
 
 // init objLoader //
 ObjLoader objLoader;
-
+MeshObj *camera;
 
 // materials //
 
@@ -95,6 +95,7 @@ int main (int argc, char **argv) {
   
   // load obj file here //
   objLoader.loadObjFile("./meshes/camera.obj", "camera");
+  camera = objLoader.getMeshObj("camera");
   
   glutMainLoop();
   
@@ -209,6 +210,12 @@ void updateGL() {
   // -> make use of this matrix to place your camera model //
   // also: DISABLE any lighting from now on //
   // you may choose a plain color for the camera model //
+  glDisable(GL_LIGHTING);
+  glPushMatrix();
+  invertRotTransMat(modelviewMatrix, modelviewMatrix_inv);
+  glMultMatrixf(modelviewMatrix_inv);
+  camera->render();
+  glPopMatrix();  
   
   // render frustum //
   GLfloat frustumCorners[8][3] = {{-1,-1,-1},{ 1,-1,-1},{ 1, 1,-1},{-1, 1,-1},
