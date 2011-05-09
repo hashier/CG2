@@ -207,6 +207,7 @@ void updateGL() {
   glMultMatrixf(modelviewMatrix_inv);
   glLightfv(GL_LIGHT0, GL_POSITION, position_camera_light);
   glPopMatrix();
+  glLightfv(GL_LIGHT1, GL_POSITION, position_world_light);
   renderScene();
   
   // render camera //
