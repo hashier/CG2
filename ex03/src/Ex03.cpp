@@ -134,7 +134,7 @@ void updateGL() {
   glEnable(GL_LIGHTING);
   glEnable(GL_SMOOTH);
   glShadeModel(GL_SMOOTH);
-  glEnable(GL_FLAT);
+  //glEnable(GL_FLAT);
   
   // DONE: setup the viewport for the 1st person camera view here -> use the left half of the window //
   glViewport(0, 0, viewportWidth, viewportHeight);  
