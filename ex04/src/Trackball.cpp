@@ -81,7 +81,10 @@ void Trackball::reset(float theta, float phi, float dist) {
   mLastPhi = mPhi;
   mTheta = theta;
   mLastTheta = mTheta;
-  mViewOffset = {sin(mTheta) * cos(mPhi) * dist, sin(mPhi) * dist, cos(mTheta) * cos(mPhi) * dist};
+  //mViewOffset = {sin(mTheta) * cos(mPhi) * dist, sin(mPhi) * dist, cos(mTheta) * cos(mPhi) * dist};
+  mViewOffset[0] = sin(mTheta) * cos(mPhi) * dist;
+  mViewOffset[1] = sin(mPhi) * dist;
+  mViewOffset[2] = cos(mTheta) * cos(mPhi) * dist;
   mX = 0;
   mY = 0;
   mState = NO_BTN;
