@@ -91,11 +91,11 @@ void initGL() {
 
 void initShader() {
   // TODO: create a new shader program here and assign it to 'shaderProgram'      //
-  
+
   // TODO: use 'loadShaderSource' to load your vertex and fragment shader sources //
   //       create your shaders and attach them to yout shader program             //
   //       finally link your program to be able to use it whenever you want it    //
-  
+
   // TODO: init your uniform variables used in the shader                         //
   //       bind them to 'uniform_innerSpotAngle' and 'uniform_outerSpotAngle'     //
   //       make sure to use the EXACT same uniform name as in your shader file    //
@@ -104,25 +104,26 @@ void initShader() {
 void updateGL() {
   // TODO: enable your shader program if not active yet //
   GLfloat aspectRatio = (GLfloat)windowWidth / windowHeight;
-  
+
   // clear renderbuffer //
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
+
   glViewport(0, 0, windowWidth, windowHeight);
-  
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(fov, aspectRatio, zNear, zFar);
-  
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
+
   trackball.rotateView();
-  
+
   // TODO: update your uniform variables //
-  
-  // TODO: render your scene //
-  
+
+  // XXX: render your scene //
+  objLoader.getMeshObj("scene")->render();
+
   // swap render and screen buffer //
   glutSwapBuffers();
 }
@@ -139,7 +140,7 @@ void resizeGL(int w, int h) {
 
 void keyboardEvent(unsigned char key, int x, int y) {
   switch (key) {
-    case 'x':
+    case 'q':
     case 27 : {
       exit(0);
       break;
