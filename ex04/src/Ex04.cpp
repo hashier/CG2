@@ -24,7 +24,7 @@ void keyboardEvent(unsigned char key, int x, int y);
 void mouseEvent(int button, int state, int x, int y);
 void mouseMoveEvent(int x, int y);
 
-void printLog(GLuint);
+void printLog(GLuint obj);
 
 GLint windowWidth, windowHeight;
 GLfloat zNear, zFar;
@@ -92,44 +92,51 @@ void initGL() {
 }
 
 void initShader() {
-  GLchar * vertex;
-  GLchar * fragment;
+    GLchar * vertex;
+    GLchar * fragment;
 
-  // XXX: create a new shader program here and assign it to 'shaderProgram'      //
-  shaderProgram = glCreateProgram();
-  GLuint prog_vertex = glCreateShader(GL_VERTEX_SHADER);
-  GLuint prog_fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    // XXX: create a new shader program here and assign it to 'shaderProgram'      //
+    shaderProgram = glCreateProgram();
+    GLuint prog_vertex = glCreateShader(GL_VERTEX_SHADER);
+    GLuint prog_fragment = glCreateShader(GL_FRAGMENT_SHADER);
 
-  // XXX: use 'loadShaderSource' to load your vertex and fragment shader sources //
-  //       create your shaders and attach them to yout shader program             //
-  //       finally link your program to be able to use it whenever you want it    //
-  vertex = loadShaderSource( "vertex");
-  fragment = loadShaderSource( "fragment");
+    // XXX: use 'loadShaderSource' to load your vertex and fragment shader sources //
+    //       create your shaders and attach them to yout shader program             //
+    //       finally link your program to be able to use it whenever you want it    //
+    vertex = loadShaderSource("shaders/vertex.s");
+    fragment = loadShaderSource("shaders/fragment.s");
 
-  glShaderSource( prog_vertex, 1, (const GLchar**) &vertex, NULL);
-  glShaderSource( prog_fragment, 1, (const GLchar**) &fragment, NULL);
+    glShaderSource(prog_vertex, 1, (const GLchar**) &vertex, NULL);
+    glShaderSource(prog_fragment, 1, (const GLchar**) &fragment, NULL);
 
-  glCompileShader( prog_vertex);
-  glCompileShader( prog_fragment);
+    glCompileShader(prog_vertex);
+    glCompileShader(prog_fragment);
 
-  glAttachShader( shaderProgram, prog_vertex);
-  glAttachShader( shaderProgram, prog_fragment);
+    glAttachShader(shaderProgram, prog_vertex);
+    glAttachShader(shaderProgram, prog_fragment);
 
-  glLinkProgram( shaderProgram);
+    glLinkProgram(shaderProgram);
 
-  printLog( prog_vertex);
-  printLog( prog_fragment);
-  printLog( shaderProgram);
+    // XXX: init your uniform variables used in the shader                         //
+    //       bind them to 'uniform_innerSpotAngle' and 'uniform_outerSpotAngle'     //
+    //       make sure to use the EXACT same uniform name as in your shader file    //
+    glUseProgram(shaderProgram);
 
-  // TODO: init your uniform variables used in the shader                         //
-  //       bind them to 'uniform_innerSpotAngle' and 'uniform_outerSpotAngle'     //
-  //       make sure to use the EXACT same uniform name as in your shader file    //
+    uniform_innerSpotAngle = glGetUniformLocation(shaderProgram, "uni_innerSpotAngle");
+    uniform_outerSpotAngle = glGetUniformLocation(shaderProgram, "uni_outerSpotAngle");
+    glUniform1f(uniform_innerSpotAngle, innerAngle);
+    glUniform1f(uniform_outerSpotAngle, outerAngle);
+
+    printLog(prog_vertex);
+    printLog(prog_fragment);
+    printLog(shaderProgram);
+
 }
 
 void updateGL() {
   // XXX: enable your shader program if not active yet //
   GLfloat aspectRatio = (GLfloat)windowWidth / windowHeight;
-  glUseProgram( shaderProgram);
+  glUseProgram(shaderProgram);
 
   // clear renderbuffer //
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -145,7 +152,9 @@ void updateGL() {
 
   trackball.rotateView();
 
-  // TODO: update your uniform variables //
+  // XXX: update your uniform variables //
+  glUniform1f(uniform_innerSpotAngle, innerAngle);
+  glUniform1f(uniform_outerSpotAngle, outerAngle);
 
   // XXX: render your scene //
   objLoader.getMeshObj("scene")->render();
@@ -269,6 +278,7 @@ char* loadShaderSource(const char* fileName) {
     return NULL;
   }
 }
+
 
 void printLog(GLuint obj)
 {
