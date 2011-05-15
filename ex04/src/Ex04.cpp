@@ -24,6 +24,8 @@ void keyboardEvent(unsigned char key, int x, int y);
 void mouseEvent(int button, int state, int x, int y);
 void mouseMoveEvent(int x, int y);
 
+void printLog(GLuint);
+
 GLint windowWidth, windowHeight;
 GLfloat zNear, zFar;
 GLfloat fov;
@@ -90,11 +92,34 @@ void initGL() {
 }
 
 void initShader() {
-  // TODO: create a new shader program here and assign it to 'shaderProgram'      //
+  GLchar * vertex;
+  GLchar * fragment;
 
-  // TODO: use 'loadShaderSource' to load your vertex and fragment shader sources //
+  // XXX: create a new shader program here and assign it to 'shaderProgram'      //
+  shaderProgram = glCreateProgram();
+  GLuint prog_vertex = glCreateShader(GL_VERTEX_SHADER);
+  GLuint prog_fragment = glCreateShader(GL_FRAGMENT_SHADER);
+
+  // XXX: use 'loadShaderSource' to load your vertex and fragment shader sources //
   //       create your shaders and attach them to yout shader program             //
   //       finally link your program to be able to use it whenever you want it    //
+  vertex = loadShaderSource( "vertex");
+  fragment = loadShaderSource( "fragment");
+
+  glShaderSource( prog_vertex, 1, (const GLchar**) &vertex, NULL);
+  glShaderSource( prog_fragment, 1, (const GLchar**) &fragment, NULL);
+
+  glCompileShader( prog_vertex);
+  glCompileShader( prog_fragment);
+
+  glAttachShader( shaderProgram, prog_vertex);
+  glAttachShader( shaderProgram, prog_fragment);
+
+  glLinkProgram( shaderProgram);
+
+  printLog( prog_vertex);
+  printLog( prog_fragment);
+  printLog( shaderProgram);
 
   // TODO: init your uniform variables used in the shader                         //
   //       bind them to 'uniform_innerSpotAngle' and 'uniform_outerSpotAngle'     //
@@ -102,8 +127,9 @@ void initShader() {
 }
 
 void updateGL() {
-  // TODO: enable your shader program if not active yet //
+  // XXX: enable your shader program if not active yet //
   GLfloat aspectRatio = (GLfloat)windowWidth / windowHeight;
+  glUseProgram( shaderProgram);
 
   // clear renderbuffer //
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -242,4 +268,25 @@ char* loadShaderSource(const char* fileName) {
     std::cout << "(loadShaderSource) - Could not open file \"" << fileName << "\"." << std::endl;
     return NULL;
   }
+}
+
+void printLog(GLuint obj)
+{
+    int infologLength = 0;
+    int maxLength;
+
+    if(glIsShader(obj))
+        glGetShaderiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+    else
+        glGetProgramiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+
+    char infoLog[maxLength];
+
+    if (glIsShader(obj))
+        glGetShaderInfoLog(obj, maxLength, &infologLength, infoLog);
+    else
+        glGetProgramInfoLog(obj, maxLength, &infologLength, infoLog);
+
+    if (infologLength > 0)
+        printf("%s\n",infoLog);
 }
