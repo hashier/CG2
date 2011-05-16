@@ -112,9 +112,9 @@ Vector crossProduct(const Vector a, const Vector b) {
 
     Vector norm;
 
-    norm.x = a.y * b.z - a.x * b.y;
-    norm.y = a.z * b.x - a.y * b.z;
-    norm.z = a.x * b.y - a.z * b.x;
+    norm.x = a.y * b.z - a.z * b.y;
+    norm.y = a.z * b.x - a.x * b.z;
+    norm.z = a.x * b.y - a.y * b.x;
 
     return norm;
 

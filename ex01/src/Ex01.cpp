@@ -53,9 +53,6 @@ void updateGL() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
   gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
-  
-
-  std::cout << vertexList.size() << " " << indexList.size() << std::endl;
 
   // now render your imported object using renderVertexArray(...) //
   renderVertexArray(vertexList, indexList);
