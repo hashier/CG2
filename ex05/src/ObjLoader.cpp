@@ -174,9 +174,33 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
     //        - every triplet (vertex-index, textureCoord-index, normal-index) is unique and indexed by indexList
     // create vertex list for vertex buffer object //
     // one vertex definition per index-triplet (vertex index, texture index, normal index) //
-    
-    std::vector<Vertex> vertexList;
+    std::vector<Vertex> vertexList(localFaceList.size() * 3);
     std::vector<unsigned int> indexList;
+    for (std::vector<Face>::iterator faceIter = localFaceList.begin(); faceIter != localFaceList.end(); ++faceIter) {
+      Face f = *faceIter;
+      for (unsigned int i = 0; i < 3; i++) {
+        struct Vertex v;
+        // hier alles mit -1 verringern, da obj bei 1 anfängt zu zählen
+        // punkt übernehmen
+        struct Point3D p = localVertexList[f.vIndex[i]-1];
+        for (unsigned int j = 0; j < 3; j++)
+          v.position[j] = p.data[j];
+        // normale übernehmen
+        if (f.nIndex[i] > 0) {
+          p = localNormalList[f.nIndex[i]-1];
+          for (unsigned int j = 0; j < 3; j++)
+            v.normal[j] = p.data[j];
+        }
+        // textur übernehmen
+        if (f.tIndex[i] > 0) {
+          p = localTexCoordList[f.tIndex[i]-1];
+          for (unsigned int j = 0; j < 2; j++)
+            v.texcoord[j] = p.data[j];
+        }
+        vertexList.push_back(v);
+        indexList.push_back(localVertexList.size() - 1);
+      }
+    }
     
     for (std::vector<Face>::iterator faceIter = localFaceList.begin(); faceIter != localFaceList.end(); ++faceIter) {
       // TODO: rearrange and complete data, when conflicting combinations of vertex and vertex attributes occur //
