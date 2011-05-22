@@ -271,10 +271,10 @@ void updateGL() {
   
   trackball.rotateView();
   glBegin(GL_QUADS);
-  glTexCoord2d(0.0, 0.0); glVertex3i( 0,  0, 0);
-  glTexCoord2d(1.0, 0.0); glVertex3i(1,  0, 0);
-  glTexCoord2d(1.0, 1.0); glVertex3i(1, 1, 0);
-  glTexCoord2d(0.0, 1.0); glVertex3i( 0, 1, 0);
+  glTexCoord2d(0.0, 0.0); glVertex3i( 0,  0, 4);
+  glTexCoord2d(1.0, 0.0); glVertex3i(1,  0, 4);
+  glTexCoord2d(1.0, 1.0); glVertex3i(1, 1, 4);
+  glTexCoord2d(0.0, 1.0); glVertex3i( 0, 1, 4);
   glEnd();
   
   // TODO: enable a texture unit, bind your texture and upload it as uniform to your shader //
