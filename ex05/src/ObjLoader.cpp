@@ -156,7 +156,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
     file.close();
     std::cout << "Imported " << localFaceList.size() << " faces from \"" << fileName << "\"" << std::endl;
     
-    // TODO: every face is able to use a different set of vertex normals and texture coordinates
+    // DONE: every face is able to use a different set of vertex normals and texture coordinates
     //       when using a single vertex for multiple faces, however, this conflicts multiple normals
     //       rearrange and complete the imported data in the following way:
     //        - if a vertex uses multiple normals and/or texture coordinates, create copies of that vertex

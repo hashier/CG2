@@ -40,7 +40,8 @@ void MeshObj::render(void) {
   // iterate over index list //
   for (std::vector<unsigned int>::iterator indexIter = mIndexData.begin(); indexIter != mIndexData.end(); ++indexIter) {
     // render indexed vertex //
-    // TODO: pass texture coordinates as vertex attribute //
+    // DONE: pass texture coordinates as vertex attribute //
+    glTexCoord2f(mVertexData[*indexIter].texcoord[0], mVertexData[*indexIter].texcoord[1]);
     glNormal3f(mVertexData[*indexIter].normal[0], mVertexData[*indexIter].normal[1], mVertexData[*indexIter].normal[2]);
     glVertex3f(mVertexData[*indexIter].position[0], mVertexData[*indexIter].position[1], mVertexData[*indexIter].position[2]);
   }

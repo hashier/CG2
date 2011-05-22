@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <opencv/highgui.h>
 
 #include <vector>
 #include <stdlib.h>
@@ -7,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
 
 #include "MeshObj.h"
 #include "ObjLoader.h"
@@ -193,28 +195,62 @@ void initShader() {
 void initUniforms(void) {
   glUseProgram(shaderProgram);
   
-  // TODO: get your textute-uniform location here //
+  // DONE: get your textute-uniform location here //
+
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture[0]);
+  uniform_texture = glGetUniformLocation(shaderProgram, "tex0");
+  glUniform1i(uniform_texture, 0);
+
 }
 
 void initTextures (void) {
   // load the texture for our object //
   loadTextureData("textures/trashbin.png");
   
-  // TODO: generate three textures                                       //
+  // DONE: generate three textures                                       //
   //       one for GL_NEAREST, one for GL_LINEAR and one MIPMAP texture  //
   //       pass the loaded texture data to each of these texture objects //
-  
+  glGenTextures(3, texture);
+
+  glBindTexture(GL_TEXTURE_2D, texture[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glBindTexture(GL_TEXTURE_2D, texture[1]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+// TODO mipmaps zum laufen bringen
+/*  
+  glBindTexture(GL_TEXTURE_2D, texture[2]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+  //Hardware geneartion of Mipmaps
+  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glGenerateMipmap(GL_TEXTURE_2D);
+*/
   // init textureIndex to 0 //
   textureIndex = 0;
 }
 
 void loadTextureData(const char *textureFile) {
-  // TODO: load the file given by 'textureFile' to the global array 'textureData' //
+  // DONE: load the file given by 'textureFile' to the global array 'textureData' //
   //       hint: you can use 'cvLoadImage()' of OpenCV to import your file        //
+  IplImage * image = cvLoadImage(textureFile);
+  textureWidth = image->width;
+  textureHeight = image->height;
+  textureData = new unsigned char[textureWidth * textureHeight * 3];
+  for (unsigned int i = 0; i < textureWidth * textureHeight * 3; i++)
+    textureData[i] = image->imageData[i];
+  cvReleaseImage(&image);
 }
 
 void updateGL() {
-  // TODO: enable your shader //
+  // DONE: enable your shader //
+  glUseProgram(shaderProgram);
   
   GLfloat aspectRatio = (GLfloat)windowWidth / windowHeight;
   
@@ -233,7 +269,11 @@ void updateGL() {
   trackball.rotateView();
   
   // TODO: enable a texture unit, bind your texture and upload it as uniform to your shader //
-  
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture[0]);
+//  uniform_texture = glGetUniformLocation(shaderProgram, "tex0");
+  glUniform1i(uniform_texture, 0);
   
   // render scene //
   objLoader.getMeshObj("trashbin")->render();
