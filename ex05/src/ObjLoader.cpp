@@ -4,6 +4,22 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <cassert>
+
+std::vector<std::string> split(std::string const& string, const char delemiter, unsigned int expected_objects = 4)
+{
+  size_t last_position(0);
+  size_t position(0);
+  std::vector<std::string> destination(expected_objects);
+         
+  for (std::string::const_iterator it(string.begin()); it != string.end(); ++it, ++position) {
+    if (*it == delemiter) {
+      destination.push_back(string.substr(last_position, position - last_position - 1));
+      last_position = position + 1;
+    }
+  }
+  return destination;
+}
 
 ObjLoader::ObjLoader() {
 }
@@ -73,15 +89,80 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
         sstr >> x >> y >> z;
         localVertexList.push_back(Point3D(x * scale, y * scale, z * scale));
       }
-      // TODO: implement parsing of vertex normals and texture coordinates //
+      // DONE: implement parsing of vertex normals and texture coordinates //
+      if (key == "vn") {
+        sstr >> x >> y >> z;
+        localNormalList.push_back(Point3D(x, y, z));
+      }
+      if (key == "vt") {
+        sstr >> x >> y;
+        localTexCoordList.push_back(Point3D(x, y));
+      }
       
       if (!key.compare("f")) {
-        // TODO: implement a robust method to load a face definition               //
+        // DONE: implement a robust method to load a face definition               //
         //       allowing vertex normals, tecture coordinates, triangles and quads //
         // read in vertex indices for a face //
+        std::string facepoint;
+        bool texture_coords_present = false;
+        bool vertex_normals_present = false;
+        unsigned int i = 0;
+        for (; i < 4 && sstr.good(); i++) {
+          // facepoint sollte jetzt so aussehen: "v/vt/vn"
+          // dann facepoint bei '/' auftrennen um die einzelnen indizes zu erhalten
+          sstr >> facepoint;
+          std::vector<std::string> tokens = split(facepoint, '/');
+          assert(tokens.size() <= 3);
+          std::stringstream index_converter(tokens[0]);
+          index_converter >> vi[i];
+          if (tokens.size() > 1 && tokens[1].size() > 0) {
+            index_converter.str(tokens[1]);
+            index_converter.clear();
+            index_converter >> ti[i];
+            texture_coords_present = true;
+          }
+          if (tokens.size() > 2 && tokens[2].size() > 0) {
+            index_converter.str(tokens[2]);
+            index_converter.clear();
+            index_converter >> ni[i];
+            vertex_normals_present = true;
+          }
+        }
         
-        // TODO: directly split up polygons using 4 vertices into two triangles //
+        // DONE: directly split up polygons using 4 vertices into two triangles //
         //       add all imported faces to 'localFaceList'                      //
+        struct Face face1;
+        for (unsigned int j = 0; j < 3; j++) {
+          face1.vIndex[j] = vi[j];
+          if (vertex_normals_present)
+            face1.nIndex[j] = ni[j];
+          else
+            face1.nIndex[j] = 0;
+          if (texture_coords_present)
+            face1.tIndex[j] = ti[j];
+          else
+            face1.tIndex[j] = 0;
+        }
+        localFaceList.push_back(face1);
+        if (i == 4) {
+          struct Face face2;
+          unsigned int face_index = 0;
+          for (unsigned int j = 0; j < 4; j++, face_index++) {
+            if (j == 2)
+              j++;
+            face1.vIndex[face_index] = vi[j];
+            if (vertex_normals_present)
+              face1.nIndex[face_index] = ni[j];
+            else
+              face1.nIndex[face_index] = 0;
+            if (texture_coords_present)
+              face1.tIndex[face_index] = ti[j];
+            else
+              face1.tIndex[face_index] = 0;
+          }
+          localFaceList.push_back(face2);
+        }
+      }
     }
     file.close();
     std::cout << "Imported " << localFaceList.size() << " faces from \"" << fileName << "\"" << std::endl;
