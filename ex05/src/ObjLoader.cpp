@@ -102,15 +102,13 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
           getline(point_stream, token, '/');
           std::stringstream index_converter(token);
           index_converter >> vi[i];
-          getline(point_stream, token, '/');
-          if (!point_stream.eof() && !point_stream.fail() && token.size() > 0) {
+          if (getline(point_stream, token) && token.size() > 0) {
             index_converter.str(token);
             index_converter.clear();
             index_converter >> ti[i];
             texture_coords_present = true;
           }
-          getline(point_stream, token);
-          if (!point_stream.eof() && !point_stream.fail() && token.size() > 0) {
+          if (getline(point_stream, token) && token.size() > 0) {
             index_converter.str(token);
             index_converter.clear();
             index_converter >> ni[i];
