@@ -6,21 +6,6 @@
 #include <cmath>
 #include <cassert>
 
-std::vector<std::string> split(std::string const& string, const char delemiter, unsigned int expected_objects = 4)
-{
-  size_t last_position(0);
-  size_t position(0);
-  std::vector<std::string> destination(expected_objects);
-         
-  for (std::string::const_iterator it(string.begin()); it != string.end(); ++it, ++position) {
-    if (*it == delemiter) {
-      destination.push_back(string.substr(last_position, position - last_position - 1));
-      last_position = position + 1;
-    }
-  }
-  return destination;
-}
-
 ObjLoader::ObjLoader() {
 }
 
@@ -108,21 +93,25 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
         bool vertex_normals_present = false;
         unsigned int i = 0;
         for (; i < 4 && sstr.good(); i++) {
-          // facepoint sollte jetzt so aussehen: "v/vt/vn"
+          // der facepoint sollte jetzt so aussehen: "v/vt/vn"
           // dann facepoint bei '/' auftrennen um die einzelnen indizes zu erhalten
+          std::string facepoint;
           sstr >> facepoint;
-          std::vector<std::string> tokens = split(facepoint, '/');
-          assert(tokens.size() <= 3);
-          std::stringstream index_converter(tokens[0]);
+          std::stringstream point_stream(facepoint);
+          std::string token;
+          getline(point_stream, token, '/');
+          std::stringstream index_converter(token);
           index_converter >> vi[i];
-          if (tokens.size() > 1 && tokens[1].size() > 0) {
-            index_converter.str(tokens[1]);
+          getline(point_stream, token, '/');
+          if (!point_stream.eof() && !point_stream.fail() && token.size() > 0) {
+            index_converter.str(token);
             index_converter.clear();
             index_converter >> ti[i];
             texture_coords_present = true;
           }
-          if (tokens.size() > 2 && tokens[2].size() > 0) {
-            index_converter.str(tokens[2]);
+          getline(point_stream, token);
+          if (!point_stream.eof() && !point_stream.fail() && token.size() > 0) {
+            index_converter.str(token);
             index_converter.clear();
             index_converter >> ni[i];
             vertex_normals_present = true;
@@ -174,7 +163,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
     //        - every triplet (vertex-index, textureCoord-index, normal-index) is unique and indexed by indexList
     // create vertex list for vertex buffer object //
     // one vertex definition per index-triplet (vertex index, texture index, normal index) //
-    std::vector<Vertex> vertexList(localFaceList.size() * 3);
+    std::vector<Vertex> vertexList;
     std::vector<unsigned int> indexList;
     for (std::vector<Face>::iterator faceIter = localFaceList.begin(); faceIter != localFaceList.end(); ++faceIter) {
       Face f = *faceIter;
