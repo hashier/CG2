@@ -187,7 +187,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
             v.texcoord[j] = p.data[j];
         }
         vertexList.push_back(v);
-        indexList.push_back(localVertexList.size() - 1);
+        indexList.push_back(vertexList.size() - 1);
       }
     }
     
