@@ -88,7 +88,6 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
         // DONE: implement a robust method to load a face definition               //
         //       allowing vertex normals, tecture coordinates, triangles and quads //
         // read in vertex indices for a face //
-        std::string facepoint;
         bool texture_coords_present = false;
         bool vertex_normals_present = false;
         unsigned int i = 0;
@@ -101,25 +100,37 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
           std::string token;
           getline(point_stream, token, '/');
           std::stringstream index_converter(token);
+          vi[i] = 0;
           index_converter >> vi[i];
-          if (getline(point_stream, token) && token.size() > 0) {
+          if (vi[i] == 0) {
+            std::cout << "fehler beim einlesen in Zeile: " << lineNumber << std::endl;
+            assert(vi[i] > 0);
+          }
+          if (getline(point_stream, token, '/') && token.size() > 0) {
             index_converter.str(token);
             index_converter.clear();
+            ti[i] = 0;
             index_converter >> ti[i];
+            assert(ti[i] > 0);
             texture_coords_present = true;
           }
           if (getline(point_stream, token) && token.size() > 0) {
             index_converter.str(token);
             index_converter.clear();
+            ni[i] = 0;
             index_converter >> ni[i];
+            assert(ni[i] > 0);
             vertex_normals_present = true;
           }
         }
+        
+        assert(i == 3 || i == 4);
         
         // DONE: directly split up polygons using 4 vertices into two triangles //
         //       add all imported faces to 'localFaceList'                      //
         struct Face face1;
         for (unsigned int j = 0; j < 3; j++) {
+          assert(vi[j] > 0);
           face1.vIndex[j] = vi[j];
           if (vertex_normals_present)
             face1.nIndex[j] = ni[j];
@@ -137,6 +148,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
           for (unsigned int j = 0; j < 4; j++, face_index++) {
             if (j == 2)
               j++;
+            assert(vi[j] > 0);
             face1.vIndex[face_index] = vi[j];
             if (vertex_normals_present)
               face1.nIndex[face_index] = ni[j];
@@ -150,6 +162,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
           localFaceList.push_back(face2);
         }
       }
+      lineNumber++;
     }
     file.close();
     std::cout << "Imported " << localFaceList.size() << " faces from \"" << fileName << "\"" << std::endl;
