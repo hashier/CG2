@@ -146,7 +146,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
           struct Face face2;
           unsigned int face_index = 0;
           for (unsigned int j = 0; j < 4; j++, face_index++) {
-            if (j == 2)
+            if (j == 1)
               j++;
             assert(vi[j] > 0);
             face1.vIndex[face_index] = vi[j];
@@ -202,9 +202,7 @@ MeshObj* ObjLoader::loadObjFile(std::string fileName, std::string ID, float scal
       }
     }
     
-    for (std::vector<Face>::iterator faceIter = localFaceList.begin(); faceIter != localFaceList.end(); ++faceIter) {
-      // TODO: rearrange and complete data, when conflicting combinations of vertex and vertex attributes occur //
-    }
+    // TODO: rearrange and complete data, when conflicting combinations of vertex and vertex attributes occur //
     
     // reconstruct normals from given vertex data (only if no normals have been imported) //
     if (localVertexList.size() == 0) reconstructNormals(vertexList, indexList);
