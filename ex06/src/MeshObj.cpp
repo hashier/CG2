@@ -61,22 +61,27 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
 }
 
 void MeshObj::render(void) {
-  const unsigned int vertexInterval = sizeof(Vertex);
-
   if (mVBO != 0) {
     // TODO: init vertex attribute arrays for vertex position, normal vector and texture coordinate //
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, vertexInterval, NULL);
-    glNormalPointer(GL_FLOAT, vertexInterval, NULL);
-    glTexCoordPointer(2, GL_FLOAT, vertexInterval, NULL);
-    glColorPointer(4, GL_FLOAT, vertexInterval, NULL);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(12));
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(24));
+
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(0));
+//    glNormalPointer(GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(12));
+//    glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(24));
+//    glColorPointer(4, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(32));
     
     // TODO: bind the index buffer object mIBO here to tell OpenGL to use the indices in that array for indexing elements in our vertex buffer //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
     
     // TODO: render VBO as triangles //
-    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
     
     // unbind the buffers //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

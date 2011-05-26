@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
 struct Vertex {
   Vertex(float x = 0, float y = 0, float z = 0, float nx = 1, float ny = 0, float nz = 0, float b = 1, float g = 1, float r = 1, float a = 1) {
     position[0] = (GLfloat)x;
