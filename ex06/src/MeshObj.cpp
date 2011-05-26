@@ -39,7 +39,7 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
   for(unsigned int i=0; i<indexData.size(); i++) {
     indexArray[i] = indexData[i];
   }
-  mIndexCount = vertexData.size();
+  mIndexCount = indexData.size();
   
   // TODO: init and bind a VBO (vertex buffer object) //
   glGenBuffers(1, &mVBO);
@@ -71,12 +71,6 @@ void MeshObj::render(void) {
     glEnableVertexAttribArray(8);
     glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(24));
 
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(0));
-//    glNormalPointer(GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(12));
-//    glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(24));
-//    glColorPointer(4, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(32));
-    
     // TODO: bind the index buffer object mIBO here to tell OpenGL to use the indices in that array for indexing elements in our vertex buffer //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
     
@@ -84,6 +78,9 @@ void MeshObj::render(void) {
     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
     
     // unbind the buffers //
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(8);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }

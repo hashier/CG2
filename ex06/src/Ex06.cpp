@@ -42,6 +42,7 @@ ObjLoader objLoader;
 
 bool shadersInitialized = false;
 GLuint shaderProgram;
+GLint uniform_texture;
 
 // this is a container for texture data, OpenGL and GLSL locations //
 struct Texture {
@@ -53,6 +54,7 @@ struct Texture {
 // storage for your local textures //
 enum TextureLayer {DIFFUSE = 0, EMISSIVE, SKY_ALPHA, SKY_COLOR, LAYER_COUNT};
 Texture texture[LAYER_COUNT];
+GLuint textureNames[LAYER_COUNT];
 
 void initTextures();
 void loadTextureData(const char *fileName, Texture &texture);
@@ -206,14 +208,36 @@ void initUniforms(void) {
   enableShader();
   
   // TODO: init your texture uniforms here //
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, textureNames[0]);
+  uniform_texture = glGetUniformLocation(shaderProgram, "tex0");
+  glUniform1i(uniform_texture, 0);
   
   disableShader();
 }
 
 void initTextures (void) {
   // TODO: load the textures for the needed material layers from the files in './textures/ into your local texture objects //
+  loadTextureData("textures/earthmap1k.jpg", texture[0]);
+  loadTextureData("textures/earthspec1k.jpg", texture[1]);
+  loadTextureData("textures/earthcloudmap.jpg", texture[2]);
+  loadTextureData("textures/earthcloudmaptrans.jpg", texture[3]);
+  loadTextureData("textures/earthlights1k.jpg", texture[4]);
   
   // TODO: initialize OpenGL textures for each taxture layer //
+  glGenTextures(5, textureNames);
+
+  glBindTexture(GL_TEXTURE_2D, textureNames[0]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[0].width, texture[0].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[0].data);
+
+//  glBindTexture(GL_TEXTURE_2D, textureNames[1]);
+//  glBindTexture(GL_TEXTURE_2D, textureNames[2]);
+//  glBindTexture(GL_TEXTURE_2D, textureNames[3]);
+//  glBindTexture(GL_TEXTURE_2D, textureNames[4]);
+
 }
 
 void loadTextureData(const char *textureFile, Texture &texture) {
