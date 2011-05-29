@@ -42,7 +42,6 @@ ObjLoader objLoader;
 
 bool shadersInitialized = false;
 GLuint shaderProgram;
-GLint uniform_texture;
 
 // this is a container for texture data, OpenGL and GLSL locations //
 struct Texture {
@@ -54,7 +53,6 @@ struct Texture {
 // storage for your local textures //
 enum TextureLayer {DIFFUSE = 0, EMISSIVE, SKY_ALPHA, SKY_COLOR, LAYER_COUNT};
 Texture texture[LAYER_COUNT];
-GLuint textureNames[LAYER_COUNT];
 
 void initTextures();
 void loadTextureData(const char *fileName, Texture &texture);
@@ -90,6 +88,7 @@ int main (int argc, char **argv) {
   
   // load obj file here //
   objLoader.loadObjFile("./meshes/sphere.obj", "earth", 1);
+  //objLoader.loadObjFile("./meshes/triangle.obj", "earth", 1);
   
   initGL();
   initShader();
@@ -208,11 +207,7 @@ void initUniforms(void) {
   enableShader();
   
   // TODO: init your texture uniforms here //
-  glEnable(GL_TEXTURE_2D);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, textureNames[0]);
-  uniform_texture = glGetUniformLocation(shaderProgram, "tex0");
-  glUniform1i(uniform_texture, 0);
+  texture[0].uniformLocation = glGetUniformLocation(shaderProgram, "tex0");
   
   disableShader();
 }
@@ -226,17 +221,21 @@ void initTextures (void) {
   loadTextureData("textures/earthlights1k.jpg", texture[4]);
   
   // TODO: initialize OpenGL textures for each taxture layer //
-  glGenTextures(5, textureNames);
+  glGenTextures(1, &texture[0].glTextureLocation);
+  glGenTextures(1, &texture[1].glTextureLocation);
+  glGenTextures(1, &texture[2].glTextureLocation);
+  glGenTextures(1, &texture[3].glTextureLocation);
+  glGenTextures(1, &texture[4].glTextureLocation);
 
-  glBindTexture(GL_TEXTURE_2D, textureNames[0]);
+  glBindTexture(GL_TEXTURE_2D, texture[0].glTextureLocation);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[0].width, texture[0].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[0].data);
 
-//  glBindTexture(GL_TEXTURE_2D, textureNames[1]);
-//  glBindTexture(GL_TEXTURE_2D, textureNames[2]);
-//  glBindTexture(GL_TEXTURE_2D, textureNames[3]);
-//  glBindTexture(GL_TEXTURE_2D, textureNames[4]);
+//  glBindTexture(GL_TEXTURE_2D, texture[1].glTextureLocation);
+//  glBindTexture(GL_TEXTURE_2D, texture[2].glTextureLocation);
+//  glBindTexture(GL_TEXTURE_2D, texture[3].glTextureLocation);
+//  glBindTexture(GL_TEXTURE_2D, texture[4].glTextureLocation);
 
 }
 
@@ -293,6 +292,10 @@ void updateGL() {
   // TODO: setup your sun-light //
   
   // TODO: enable texture units, bind textures and pass them to your shader //
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture[0].glTextureLocation);
+  glUniform1i(texture[0].uniformLocation, 0);
   
   objLoader.getMeshObj("earth")->render();
   
