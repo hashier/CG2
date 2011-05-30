@@ -207,7 +207,17 @@ void initUniforms(void) {
   enableShader();
   
   // TODO: init your texture uniforms here //
-  texture[0].uniformLocation = glGetUniformLocation(shaderProgram, "tex0");
+  texture[0].uniformLocation = glGetUniformLocation(shaderProgram, "earthmap");
+  texture[1].uniformLocation = glGetUniformLocation(shaderProgram, "earthspec");
+  texture[2].uniformLocation = glGetUniformLocation(shaderProgram, "earthcloudmap");
+  texture[3].uniformLocation = glGetUniformLocation(shaderProgram, "earthcloudmaptrans");
+  texture[4].uniformLocation = glGetUniformLocation(shaderProgram, "earthlights");
+  
+//  texture[0].uniformLocation = glGetUniformLocation(shaderProgram, "earth_day");
+//  texture[1].uniformLocation = glGetUniformLocation(shaderProgram, "specular");
+//  texture[2].uniformLocation = glGetUniformLocation(shaderProgram, "clouds");
+//  texture[3].uniformLocation = glGetUniformLocation(shaderProgram, "clouds_alpha");
+//  texture[4].uniformLocation = glGetUniformLocation(shaderProgram, "earth_night");
   
   disableShader();
 }
@@ -230,13 +240,27 @@ void initTextures (void) {
   glBindTexture(GL_TEXTURE_2D, texture[0].glTextureLocation);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[0].width, texture[0].height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture[0].data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[0].width, texture[0].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[0].data);
 
-//  glBindTexture(GL_TEXTURE_2D, texture[1].glTextureLocation);
-//  glBindTexture(GL_TEXTURE_2D, texture[2].glTextureLocation);
-//  glBindTexture(GL_TEXTURE_2D, texture[3].glTextureLocation);
-//  glBindTexture(GL_TEXTURE_2D, texture[4].glTextureLocation);
+  glBindTexture(GL_TEXTURE_2D, texture[1].glTextureLocation);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[1].width, texture[1].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[1].data);
 
+  glBindTexture(GL_TEXTURE_2D, texture[2].glTextureLocation);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[2].width, texture[2].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[2].data);
+
+  glBindTexture(GL_TEXTURE_2D, texture[3].glTextureLocation);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[3].width, texture[3].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[3].data);
+
+  glBindTexture(GL_TEXTURE_2D, texture[4].glTextureLocation);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[4].width, texture[4].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[4].data);
 }
 
 void loadTextureData(const char *textureFile, Texture &texture) {
@@ -290,12 +314,37 @@ void updateGL() {
   enableShader();
   
   // TODO: setup your sun-light //
+  glEnable(GL_LIGHTING);
+  GLfloat white_camera_spec_ptr[] = {1, 1, 1, 1};
+  GLfloat position_camera_light[] = {1, 1, 1, 1};
+  glLightfv(GL_LIGHT0, GL_POSITION, position_camera_light);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, white_camera_spec_ptr);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, white_camera_spec_ptr);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_camera_spec_ptr);
+  glEnable(GL_LIGHT0);
   
   // TODO: enable texture units, bind textures and pass them to your shader //
   glEnable(GL_TEXTURE_2D);
+
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture[0].glTextureLocation);
   glUniform1i(texture[0].uniformLocation, 0);
+  
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, texture[1].glTextureLocation);
+  glUniform1i(texture[1].uniformLocation, 1);
+  
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, texture[2].glTextureLocation);
+  glUniform1i(texture[2].uniformLocation, 2);
+  
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, texture[3].glTextureLocation);
+  glUniform1i(texture[3].uniformLocation, 3);
+  
+  glActiveTexture(GL_TEXTURE4);
+  glBindTexture(GL_TEXTURE_2D, texture[4].glTextureLocation);
+  glUniform1i(texture[4].uniformLocation, 4);
   
   objLoader.getMeshObj("earth")->render();
   
