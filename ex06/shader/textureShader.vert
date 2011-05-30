@@ -1,6 +1,6 @@
 #version 120
 
-uniform sampler2D tex0;
+uniform sampler2D earthmap;
 varying vec3 norm_dir, view_dir, light_dir;
 
 void main() {
@@ -10,5 +10,5 @@ void main() {
   view_dir = -(gl_ModelViewMatrix * gl_Vertex).xyz;
   light_dir = gl_LightSource[0].position.xyz + view_dir;
 
-  gl_TexCoord[0] = gl_MultiTexCoord0;
+  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
 }
