@@ -243,20 +243,96 @@ void ObjLoader::reconstructNormals(std::vector<Vertex> &vertexList, const std::v
 
 void ObjLoader::computeTangentSpace(std::vector<Vertex> &vertexList, const std::vector<unsigned int> &indexList) {
   // TODO: iterator over faces (given by index triplets) and calculate tangents and bitangents for each vertex //
+  std::vector<unsigned int>::const_iterator indexIt = indexList.begin();
+  for(unsigned int i=0; i<indexList.size()/3; i++) {
+    Vertex v0, v1, v2, e1, e2;
+    for(int j=0; j<3; j++) {
+      v0 = vertexList[*indexIt++];
+      v1 = vertexList[*indexIt++];
+      v2 = vertexList[*indexIt++];
+    }
+
   //       - compute triangle edges e1, e2
+    e1.position[0] = v1.position[0] - v0.position[0];
+    e1.position[1] = v1.position[1] - v1.position[1];
+    e1.position[2] = v1.position[2] - v2.position[2];
+
+    e2.position[0] = v2.position[0] - v0.position[0];
+    e2.position[1] = v2.position[1] - v1.position[1];
+    e2.position[2] = v2.position[2] - v2.position[2];
+
   //       - compute uv-distances dU1, dU2, dV1, dV2
+    GLfloat dU1 = v1.texcoord[0] - v0.texcoord[0];
+    GLfloat dU2 = v2.texcoord[0] - v0.texcoord[0];
+    GLfloat dV1 = v1.texcoord[1] - v0.texcoord[1];
+    GLfloat dV2 = v2.texcoord[1] - v0.texcoord[1];
+
   //       - compute determinant det(A)
+    GLfloat det_a = dU1*dV2 - dU2*dV1;
+
   //       - compute tangent and bitangent from uv-mapping and triangle edges
+    GLfloat dU1_inv = dV2/det_a;
+    GLfloat dU2_inv = -dU2/det_a;
+    GLfloat dV1_inv = -dV1/det_a;
+    GLfloat dV2_inv = dU1/det_a;
+    Vertex t, b;
+
+    t.position[0] = dU1_inv*e1.position[0] + dV1_inv*e2.position[0];
+    t.position[1] = dU1_inv*e1.position[1] + dV1_inv*e2.position[1];
+    t.position[2] = dU1_inv*e1.position[2] + dV1_inv*e2.position[2];
+    
+    b.position[0] = dU2_inv*e1.position[0] + dV2_inv*e2.position[0];
+    b.position[1] = dU2_inv*e1.position[1] + dV2_inv*e2.position[1];
+    b.position[2] = dU2_inv*e1.position[2] + dV2_inv*e2.position[2];
+
   //       - accumulate tangent and bitangent to face-vertices
+    v0.tangent[0] += t.position[0];
+    v0.tangent[1] += t.position[1];
+    v0.tangent[2] += t.position[2];
+    v0.bitangent[0] += b.position[0];
+    v0.bitangent[1] += b.position[1];
+    v0.bitangent[2] += b.position[2];
+
+    v1.tangent[0] += t.position[0];
+    v1.tangent[1] += t.position[1];
+    v1.tangent[2] += t.position[2];
+    v1.bitangent[0] += b.position[0];
+    v1.bitangent[1] += b.position[1];
+    v1.bitangent[2] += b.position[2];
+
+    v2.tangent[0] += t.position[0];
+    v2.tangent[1] += t.position[1];
+    v2.tangent[2] += t.position[2];
+    v2.bitangent[0] += b.position[0];
+    v2.bitangent[1] += b.position[1];
+    v2.bitangent[2] += b.position[2];
+  }
   
   // TODO: normalize accumulated tangents and bitangents //
+  for(unsigned int i=0; i<vertexList.size(); i++) {
+    normalizeVector(vertexList[i].tangent, 3);
+    normalizeVector(vertexList[i].bitangent, 3);
+  }
   
   // TODO: use gram-schmidt approach to reorthogonalize the current vectors //
   //       - compute remapped tangent: T' = T - (N*T)*N
   //       - normalize T'
   //       - compute cross-product to recover B' from T' and N
+  for(unsigned int i=0; i<vertexList.size(); i++) {
+    GLfloat NdotT = vertexList[i].normal[0]*vertexList[i].tangent[0] + vertexList[i].normal[1]*vertexList[i].tangent[1] + vertexList[i].normal[2]*vertexList[i].tangent[2]; 
+    vertexList[i].tangent[0] = vertexList[i].tangent[0] - NdotT*vertexList[i].normal[0];
+    vertexList[i].tangent[1] = vertexList[i].tangent[1] - NdotT*vertexList[i].normal[1];
+    vertexList[i].tangent[2] = vertexList[i].tangent[2] - NdotT*vertexList[i].normal[2];
+
+    normalizeVector(vertexList[i].tangent, 3);
+
+    vertexList[i].bitangent[0] = vertexList[i].tangent[1]*vertexList[i].normal[2] - vertexList[i].tangent[2]*vertexList[i].normal[1];
+    vertexList[i].bitangent[1] = vertexList[i].tangent[2]*vertexList[i].normal[0] - vertexList[i].tangent[0]*vertexList[i].normal[2];
+    vertexList[i].bitangent[2] = vertexList[i].tangent[0]*vertexList[i].normal[1] - vertexList[i].tangent[1]*vertexList[i].normal[0];
+  }
   
   // TODO: store computed vectors as vertex attributes //
+  // ???
 }
 
 MeshObj* ObjLoader::getMeshObj(std::string ID) {
