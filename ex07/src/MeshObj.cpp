@@ -60,7 +60,7 @@ void MeshObj::setData(const std::vector<Vertex> &vertexData, const std::vector<u
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void MeshObj::render(void) {
+void MeshObj::render(GLint t_attr, GLint b_attr) {
   if (mVBO != 0) {
     // init vertex attribute arrays //
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
@@ -71,7 +71,11 @@ void MeshObj::render(void) {
     glEnableVertexAttribArray(8);
     glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), OFFSET(6 * sizeof(GLfloat)));
     
-    // TODO: upload tangent and bitangent attributes (by using texCoord1 and 2 for example) //
+    // DONE: upload tangent and bitangent attributes (by using texCoord1 and 2 for example) //
+    glEnableVertexAttribArray(t_attr);
+    glVertexAttribPointer(t_attr, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), OFFSET(8 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(b_attr);
+    glVertexAttribPointer(b_attr, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), OFFSET(11 * sizeof(GLfloat)));
     
     // bind the index buffer object mIBO here //
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);

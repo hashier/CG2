@@ -242,7 +242,7 @@ void ObjLoader::reconstructNormals(std::vector<Vertex> &vertexList, const std::v
 }
 
 void ObjLoader::computeTangentSpace(std::vector<Vertex> &vertexList, const std::vector<unsigned int> &indexList) {
-  // TODO: iterator over faces (given by index triplets) and calculate tangents and bitangents for each vertex //
+  // DONE: iterator over faces (given by index triplets) and calculate tangents and bitangents for each vertex //
   for(unsigned int i=0; i<indexList.size(); i++) {
     Vertex v0, v1, v2, e1, e2;
     v0 = vertexList[indexList[i++]];
@@ -305,13 +305,13 @@ void ObjLoader::computeTangentSpace(std::vector<Vertex> &vertexList, const std::
     v2.bitangent[2] += b.position[2];
   }
   
-  // TODO: normalize accumulated tangents and bitangents //
+  // DONE: normalize accumulated tangents and bitangents //
   for(unsigned int i=0; i<vertexList.size(); i++) {
     normalizeVector(vertexList[i].tangent, 3);
     normalizeVector(vertexList[i].bitangent, 3);
   }
   
-  // TODO: use gram-schmidt approach to reorthogonalize the current vectors //
+  // DONE: use gram-schmidt approach to reorthogonalize the current vectors //
   //       - compute remapped tangent: T' = T - (N*T)*N
   //       - normalize T'
   //       - compute cross-product to recover B' from T' and N

@@ -44,6 +44,7 @@ ObjLoader objLoader;
 
 bool shadersInitialized = false;
 GLuint shaderProgram;
+GLint b_attr, t_attr;
 
 struct Texture {
   unsigned char *data;
@@ -204,13 +205,28 @@ void initShader() {
 void initUniforms(void) {
   enableShader();
   
-  // TODO: assign the used texture uniforms here //
+  // DONE: assign the used texture uniforms here //
+  b_attr = glGetAttribLocation(shaderProgram, "bitangent");
+  t_attr = glGetAttribLocation(shaderProgram, "tangent");
+
+  texture[DIFFUSE].uniformLocation = glGetUniformLocation(shaderProgram, "diffuseTex");
+  texture[NORMAL_MAP].uniformLocation = glGetUniformLocation(shaderProgram, "normalTex");
   
   disableShader();
 }
 
 void initTextures (void) {
-  // TODO: init your textures here //
+  // DONE: init your textures here //
+  loadTextureData("textures/mars.png", texture[DIFFUSE]);
+  loadTextureData("textures/mars_normal.png", texture[NORMAL_MAP]);
+
+  for (unsigned int layer = DIFFUSE; layer < LAYER_COUNT; ++layer) {
+    glGenTextures(1, &texture[layer].glTextureLocation);
+    glBindTexture(GL_TEXTURE_2D, texture[layer].glTextureLocation);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture[layer].width, texture[layer].height, 0, GL_BGR, GL_UNSIGNED_BYTE, texture[layer].data);
+  }
 }
 
 void loadTextureData(const char *textureFile, Texture &texture) {
@@ -257,10 +273,22 @@ void updateGL() {
   // render planet //
   enableShader();
   
-  // TODO: enable and upload textures //
+  // DONE: enable and upload textures //
+  for (unsigned int layer = DIFFUSE; layer < LAYER_COUNT; ++layer) {
+    glActiveTexture(GL_TEXTURE0 + layer);
+    glBindTexture(GL_TEXTURE_2D, texture[layer].glTextureLocation);
+    glUniform1i(texture[layer].uniformLocation, layer);
+  }
+
+  glBegin(GL_QUADS);
+  glTexCoord2d(0.0, 0.0); glVertex3i( 0, -10, -4);
+  glTexCoord2d(1.0, 0.0); glVertex3i(10, -10, -4);
+  glTexCoord2d(1.0, 1.0); glVertex3i(10, 0, -4);
+  glTexCoord2d(0.0, 1.0); glVertex3i( 0, 0, -4);
+  glEnd();
   
   // render object //
-  objLoader.getMeshObj("planet")->render();
+  objLoader.getMeshObj("planet")->render(t_attr, b_attr);
   
   disableShader();
   

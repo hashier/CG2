@@ -36,7 +36,7 @@ class MeshObj {
     ~MeshObj();
     
     void setData(const std::vector<Vertex> &vertexData, const std::vector<unsigned int> &indexData);
-    void render(void);
+    void render(GLint t_attr, GLint b_attr);
     
     float getWidth(void);
     float getHeight(void);
