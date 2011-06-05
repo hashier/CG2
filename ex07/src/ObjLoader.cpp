@@ -245,20 +245,18 @@ void ObjLoader::computeTangentSpace(std::vector<Vertex> &vertexList, const std::
   // TODO: iterator over faces (given by index triplets) and calculate tangents and bitangents for each vertex //
   for(unsigned int i=0; i<indexList.size(); i++) {
     Vertex v0, v1, v2, e1, e2;
-    for(int j=0; j<3; j++) {
-      v0 = vertexList[indexList[i++]];
-      v1 = vertexList[indexList[i++]];
-      v2 = vertexList[indexList[i]];
-    }
+    v0 = vertexList[indexList[i++]];
+    v1 = vertexList[indexList[i++]];
+    v2 = vertexList[indexList[i]];
 
   //       - compute triangle edges e1, e2
     e1.position[0] = v1.position[0] - v0.position[0];
-    e1.position[1] = v1.position[1] - v1.position[1];
-    e1.position[2] = v1.position[2] - v2.position[2];
+    e1.position[1] = v1.position[1] - v0.position[1];
+    e1.position[2] = v1.position[2] - v0.position[2];
 
     e2.position[0] = v2.position[0] - v0.position[0];
-    e2.position[1] = v2.position[1] - v1.position[1];
-    e2.position[2] = v2.position[2] - v2.position[2];
+    e2.position[1] = v2.position[1] - v0.position[1];
+    e2.position[2] = v2.position[2] - v0.position[2];
 
   //       - compute uv-distances dU1, dU2, dV1, dV2
     GLfloat dU1 = v1.texcoord[0] - v0.texcoord[0];
