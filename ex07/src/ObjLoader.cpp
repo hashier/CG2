@@ -243,13 +243,12 @@ void ObjLoader::reconstructNormals(std::vector<Vertex> &vertexList, const std::v
 
 void ObjLoader::computeTangentSpace(std::vector<Vertex> &vertexList, const std::vector<unsigned int> &indexList) {
   // TODO: iterator over faces (given by index triplets) and calculate tangents and bitangents for each vertex //
-  std::vector<unsigned int>::const_iterator indexIt = indexList.begin();
-  for(unsigned int i=0; i<indexList.size()/3; i++) {
+  for(unsigned int i=0; i<indexList.size(); i++) {
     Vertex v0, v1, v2, e1, e2;
     for(int j=0; j<3; j++) {
-      v0 = vertexList[*indexIt++];
-      v1 = vertexList[*indexIt++];
-      v2 = vertexList[*indexIt++];
+      v0 = vertexList[indexList[i++]];
+      v1 = vertexList[indexList[i++]];
+      v2 = vertexList[indexList[i]];
     }
 
   //       - compute triangle edges e1, e2
