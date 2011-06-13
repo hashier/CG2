@@ -50,6 +50,7 @@ GLfloat lightPos[4] = {0.0, 0.0, 0.0, 1.0};
 
 int main (int argc, char **argv) {
   // TODO: enable the stencil buffer //
+  glEnable(GL_STENCIL_TEST);
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   
@@ -244,6 +245,8 @@ void renderShadow() {
   // TODO: init your shadow volume, if update is needed //
   
   // TODO: disable rendering to screen and depth buffer //
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthMask(GL_FALSE);
   
   // TODO: enable stencil test and face culling //
   

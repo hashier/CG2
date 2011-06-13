@@ -82,10 +82,28 @@ void MeshObj::render(void) {
 }
 
 void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
+  // init vince custom vector for convenience
+  Point3D light = Point3D(lightPos);
+
   // TODO: init the shadow volume for a given light source position 'lightPos' //
+  // not sure what to do here
   
   // TODO: clone all vertices and compute their projections //
   //       -> store as NEW local array of 'vertex'          //
+  // is kwatsch so. ueberarbeiten!
+  Vertex vertices[mVertexData.size()*2];
+  for(int i=0; i<mVertexData.size(); i++) {
+    Point3D oldVert = Point3D(mVertexData[i]);
+    Point3D newVert = Point3D();
+    newVert = oldVert + (oldVert - light) * 20;
+    vertices[i].position[0] = newVert.data[0];
+    vertices[i].position[1] = newVert.data[1];
+    vertices[i].position[2] = newVert.data[2];
+    i++;
+    vertices[i].position[0] = mVertexData[i].position[0];
+    vertices[i].position[1] = mVertexData[i].position[1];
+    vertices[i].position[2] = mVertexData[i].position[2];
+  }
   
   // TODO: compute shadow volume faces (6 resp. 8 triangles depending on technique) //
   //       -> check correct face orientation                                        //
