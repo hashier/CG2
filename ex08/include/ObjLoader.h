@@ -19,6 +19,11 @@ struct Point3D {
     data[1] = d[1];
     data[2] = d[2];
   }
+  Point3D(Vertex const &v) {
+    data[0] = v.position[0];
+    data[1] = v.position[1];
+    data[2] = v.position[2];
+  }
   float data[3];
 
   float operator*(Point3D const &a) {
@@ -65,6 +70,7 @@ struct Point3D {
 
 Point3D operator*(float const &a, Point3D const &b);
 
+#if 0
 struct Point3D {
   Point3D(float x = 0, float y = 0, float z = 0) {
     data[0] = x;
@@ -73,6 +79,7 @@ struct Point3D {
   }
   float data[3];
 };
+#endif
 
 struct Face {
   unsigned int vIndex[3];
