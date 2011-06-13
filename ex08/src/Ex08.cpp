@@ -48,11 +48,12 @@ GLuint shaderProgram;
 // light //
 GLfloat lightPos[4] = {0.0, 0.0, 0.0, 1.0};
 
+bool objects_or_lights_changed = true;
+
 int main (int argc, char **argv) {
   // TODO: enable the stencil buffer //
-  glEnable(GL_STENCIL_TEST);
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
   
   windowWidth = 512;
   windowHeight = 512;
@@ -235,6 +236,10 @@ void renderScene() {
   
   // render scene objects //
   objLoader.getMeshObj("scene")->render();
+#if 0
+  // TODO wieder weg machen
+  objLoader.getMeshObj("scene")->renderShadowVolume();
+#endif
   
   glDisable(GL_LIGHT0);
   // disable shader //
@@ -243,22 +248,47 @@ void renderScene() {
 
 void renderShadow() {
   // TODO: init your shadow volume, if update is needed //
+  if (objects_or_lights_changed) {
+    objLoader.getMeshObj("scene")->initShadowVolume(lightPos);
+    objects_or_lights_changed = false;
+  }
+
+#if 0
+  objLoader.getMeshObj("scene")->renderShadowVolume();
+  return;
+#endif
   
   // TODO: disable rendering to screen and depth buffer //
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-  glDepthMask(GL_FALSE);
+//  glDepthMask(GL_FALSE);
   
   // TODO: enable stencil test and face culling //
+  glEnable(GL_STENCIL_TEST);
+  glEnable(GL_CULL_FACE);
   
   // TODO: first shadow pass -> render front faces increasing stencil buffer //
+  glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+  glFrontFace(GL_CCW);
+  objLoader.getMeshObj("scene")->renderShadowVolume();
   
   // TODO: second shadow pass -> render back faces decreasing stencil buffer //
+  glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+  glFrontFace(GL_CW);
+  objLoader.getMeshObj("scene")->renderShadowVolume();
   
   // TODO: enable rendering to screen and depth buffer and disable face culling //
+  glFrontFace(GL_CCW);
+  glDisable(GL_CULL_FACE);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glDepthMask(GL_TRUE);
   
   // TODO: final pass -> render screen quad with current stencil buffer //
+  glStencilFunc(GL_NOTEQUAL, 0, 0xFFFFFFFF);
+  renderScreenFillingQuad();
   
-  // TODO: diable stencil testing //
+  // TODO: disable stencil testing //
+  glDisable(GL_STENCIL_TEST);
 }
 
 void renderScreenFillingQuad() {

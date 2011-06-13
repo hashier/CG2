@@ -111,7 +111,9 @@ void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
   // TODO: compute shadow volume faces (6 resp. 8 triangles depending on technique) //
   //       -> check correct face orientation                                        //
   //       -> create new faces by adding indices to a NEW index array               //
-  unsigned int indizes[8*mIndexCount];
+  // TODO: store the index count for indexed vertex buffer rendering to 'mShadowIndexCount' //
+  const unsigned int step = 6;
+  unsigned int indizes[mShadowIndexCount = step*mIndexCount];
   for (unsigned int i = 0; i < mIndexCount; i+=3) {
     // punkte holen
     unsigned int p0 = mIndexData[i+0];
@@ -124,44 +126,44 @@ void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
 
     // volume erstellen
     // rechteck bei p0 und p1
-    indizes[i*8 + 0] = p0;
-    indizes[i*8 + 1] = p1_strich;
-    indizes[i*8 + 2] = p0_strich;
+    indizes[i*step + 0] = p0;
+    indizes[i*step + 1] = p1_strich;
+    indizes[i*step + 2] = p0_strich;
 
-    indizes[i*8 + 3] = p0;
-    indizes[i*8 + 4] = p1;
-    indizes[i*8 + 5] = p1_strich;
+    indizes[i*step + 3] = p0;
+    indizes[i*step + 4] = p1;
+    indizes[i*step + 5] = p1_strich;
 
     // rechteck bei p0 und p2
-    indizes[i*8 + 6] = p0;
-    indizes[i*8 + 7] = p0_strich;
-    indizes[i*8 + 8] = p2_strich;
+    indizes[i*step + 6] = p0;
+    indizes[i*step + 7] = p0_strich;
+    indizes[i*step + 8] = p2_strich;
 
-    indizes[i*8 + 9] = p2;
-    indizes[i*8 + 10] = p0;
-    indizes[i*8 + 11] = p2_strich;
+    indizes[i*step + 9] = p2;
+    indizes[i*step + 10] = p0;
+    indizes[i*step + 11] = p2_strich;
 
     // reckteck bei p1 und p2
-    indizes[i*8 + 12] = p1;
-    indizes[i*8 + 13] = p2_strich;
-    indizes[i*8 + 14] = p1_strich;
+    indizes[i*step + 12] = p1;
+    indizes[i*step + 13] = p2_strich;
+    indizes[i*step + 14] = p1_strich;
 
-    indizes[i*8 + 15] = p2;
-    indizes[i*8 + 16] = p2_strich;
-    indizes[i*8 + 17] = p1;
+    indizes[i*step + 15] = p2;
+    indizes[i*step + 16] = p2_strich;
+    indizes[i*step + 17] = p1;
 
-    // Vorne und hinten
-    indizes[i*8 + 18] = p0;
-    indizes[i*8 + 19] = p1;
-    indizes[i*8 + 20] = p2;
+    if (step == 8) {
+      // Vorne und hinten
+      indizes[i*step + 18] = p0;
+      indizes[i*step + 19] = p1;
+      indizes[i*step + 20] = p2;
 
-    indizes[i*8 + 21] = p0_strich;
-    indizes[i*8 + 22] = p2_strich;
-    indizes[i*8 + 23] = p1_strich;
+      indizes[i*step + 21] = p0_strich;
+      indizes[i*step + 22] = p2_strich;
+      indizes[i*step + 23] = p1_strich;
+    }
   }
   
-  // TODO: store the index count for indexed vertex buffer rendering to 'mShadowIndexCount' //
-  mShadowIndexCount = 8 * mIndexCount;
   
   // TODO: setup VBO ('mShadowVBO') and IBO ('mShadowIBO') for the computed data //
   if (mShadowVBO == 0) {
