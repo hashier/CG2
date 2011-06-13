@@ -82,6 +82,7 @@ void MeshObj::render(void) {
 }
 
 void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
+  const unsigned int very_long_distance = 20;
   // init vince custom vector for convenience
   Point3D light = Point3D(lightPos);
 
@@ -90,28 +91,91 @@ void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
   
   // TODO: clone all vertices and compute their projections //
   //       -> store as NEW local array of 'vertex'          //
-  // is kwatsch so. ueberarbeiten!
   Vertex vertices[mVertexData.size()*2];
   for(int i=0; i<mVertexData.size(); i++) {
-    Point3D oldVert = Point3D(mVertexData[i]);
-    Point3D newVert = Point3D();
-    newVert = oldVert + (oldVert - light) * 20;
-    vertices[i].position[0] = newVert.data[0];
-    vertices[i].position[1] = newVert.data[1];
-    vertices[i].position[2] = newVert.data[2];
-    i++;
     vertices[i].position[0] = mVertexData[i].position[0];
     vertices[i].position[1] = mVertexData[i].position[1];
     vertices[i].position[2] = mVertexData[i].position[2];
+  }
+  for(int i=mVertexData.size(); i<mVertexData.size()*2; i++) {
+    Point3D oldVert = Point3D(mVertexData[i - mVertexData.size()]);
+    Point3D newVert = Point3D();
+    newVert = oldVert + (oldVert - light) * very_long_distance;
+    vertices[i].position[0] = newVert.data[0];
+    vertices[i].position[1] = newVert.data[1];
+    vertices[i].position[2] = newVert.data[2];
   }
   
   // TODO: compute shadow volume faces (6 resp. 8 triangles depending on technique) //
   //       -> check correct face orientation                                        //
   //       -> create new faces by adding indices to a NEW index array               //
+  unsigned int indizes[8*mIndexCount];
+  for (unsigned int i = 0; i < mIndexCount; i+=3) {
+    // punkte holen
+    unsigned int p0 = mIndexData[i+0];
+    unsigned int p1 = mIndexData[i+1];
+    unsigned int p2 = mIndexData[i+2];
+    // projektionen der punkte holen
+    unsigned int p0_strich = mIndexData[i+0] + mVertexData.size();
+    unsigned int p1_strich = mIndexData[i+1] + mVertexData.size();
+    unsigned int p2_strich = mIndexData[i+2] + mVertexData.size();
+
+    // volume erstellen
+    // rechteck bei p0 und p1
+    indizes[i*8 + 0] = p0;
+    indizes[i*8 + 1] = p1_strich;
+    indizes[i*8 + 2] = p0_strich;
+
+    indizes[i*8 + 3] = p0;
+    indizes[i*8 + 4] = p1;
+    indizes[i*8 + 5] = p1_strich;
+
+    // rechteck bei p0 und p2
+    indizes[i*8 + 6] = p0;
+    indizes[i*8 + 7] = p0_strich;
+    indizes[i*8 + 8] = p2_strich;
+
+    indizes[i*8 + 9] = p2;
+    indizes[i*8 + 10] = p0;
+    indizes[i*8 + 11] = p2_strich;
+
+    // reckteck bei p1 und p2
+    indizes[i*8 + 12] = p1;
+    indizes[i*8 + 13] = p2_strich;
+    indizes[i*8 + 14] = p1_strich;
+
+    indizes[i*8 + 15] = p2;
+    indizes[i*8 + 16] = p2_strich;
+    indizes[i*8 + 17] = p1;
+
+    // Vorne und hinten
+    indizes[i*8 + 18] = p0;
+    indizes[i*8 + 19] = p1;
+    indizes[i*8 + 20] = p2;
+
+    indizes[i*8 + 21] = p0_strich;
+    indizes[i*8 + 22] = p2_strich;
+    indizes[i*8 + 23] = p1_strich;
+  }
   
   // TODO: store the index count for indexed vertex buffer rendering to 'mShadowIndexCount' //
+  mShadowIndexCount = 8 * mIndexCount;
   
   // TODO: setup VBO ('mShadowVBO') and IBO ('mShadowIBO') for the computed data //
+  if (mShadowVBO == 0) {
+    glGenBuffers(1, &mShadowVBO);
+  }
+  glBindBuffer(GL_ARRAY_BUFFER, mShadowVBO);
+  // copy data into the VBO //
+  glBufferData(GL_ARRAY_BUFFER, mVertexData.size() * 2 * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+  
+  // init and bind a IBO (index buffer object) //
+  if (mShadowIBO == 0) {
+    glGenBuffers(1, &mShadowIBO);
+  }
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mShadowIBO);
+  // copy data into the IBO //
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, mShadowIndexCount * sizeof(GLint), indizes, GL_STATIC_DRAW);
   
   // unbind buffers //
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
