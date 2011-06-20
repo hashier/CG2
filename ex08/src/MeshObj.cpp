@@ -102,7 +102,7 @@ void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
   for(int i=mVertexData.size(); i<mVertexData.size()*2; i++) {
     Point3D oldVert = Point3D(mVertexData[i - mVertexData.size()]);
     Point3D newVert = Point3D();
-    newVert = oldVert + (oldVert - light) * very_long_distance;
+    newVert = oldVert + (oldVert - light).normalize() * very_long_distance;
     vertices[i].position[0] = newVert.data[0];
     vertices[i].position[1] = newVert.data[1];
     vertices[i].position[2] = newVert.data[2];
@@ -124,33 +124,44 @@ void MeshObj::initShadowVolume(GLfloat lightPos[4]) {
     unsigned int p1_strich = mIndexData[i+1] + mVertexData.size();
     unsigned int p2_strich = mIndexData[i+2] + mVertexData.size();
 
+    Point3D p0_p3d(mVertexData[p0]);
+    Point3D p1_p3d(mVertexData[p1]);
+    Point3D p2_p3d(mVertexData[p2]);
+    Point3D triangle_to_light = light - p0_p3d;
+
+    Point3D p01 = (p1_p3d - p0_p3d).normalize();
+    Point3D p02 = (p2_p3d - p0_p3d).normalize();
+    Point3D triangle_normal = p01.cross(p02);
+
+    bool reverse_orientation = triangle_normal * triangle_to_light > 0;
+
     // volume erstellen
     // rechteck bei p0 und p1
     indizes[i*step + 0] = p0;
-    indizes[i*step + 1] = p1_strich;
-    indizes[i*step + 2] = p0_strich;
+    indizes[i*step + 1 + reverse_orientation] = p1_strich;
+    indizes[i*step + 2 - reverse_orientation] = p0_strich;
 
     indizes[i*step + 3] = p0;
-    indizes[i*step + 4] = p1;
-    indizes[i*step + 5] = p1_strich;
+    indizes[i*step + 4 + reverse_orientation] = p1;
+    indizes[i*step + 5 - reverse_orientation] = p1_strich;
 
     // rechteck bei p0 und p2
     indizes[i*step + 6] = p0;
-    indizes[i*step + 7] = p0_strich;
-    indizes[i*step + 8] = p2_strich;
+    indizes[i*step + 7 + reverse_orientation] = p0_strich;
+    indizes[i*step + 8 - reverse_orientation] = p2_strich;
 
     indizes[i*step + 9] = p2;
-    indizes[i*step + 10] = p0;
-    indizes[i*step + 11] = p2_strich;
+    indizes[i*step + 10 + reverse_orientation] = p0;
+    indizes[i*step + 11 - reverse_orientation] = p2_strich;
 
     // reckteck bei p1 und p2
     indizes[i*step + 12] = p1;
-    indizes[i*step + 13] = p2_strich;
-    indizes[i*step + 14] = p1_strich;
+    indizes[i*step + 13 + reverse_orientation] = p2_strich;
+    indizes[i*step + 14 - reverse_orientation] = p1_strich;
 
     indizes[i*step + 15] = p2;
-    indizes[i*step + 16] = p2_strich;
-    indizes[i*step + 17] = p1;
+    indizes[i*step + 16 + reverse_orientation] = p2_strich;
+    indizes[i*step + 17 - reverse_orientation] = p1;
 
     if (step == 8) {
       // Vorne und hinten

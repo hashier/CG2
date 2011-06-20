@@ -236,10 +236,6 @@ void renderScene() {
   
   // render scene objects //
   objLoader.getMeshObj("scene")->render();
-#if 0
-  // TODO wieder weg machen
-  objLoader.getMeshObj("scene")->renderShadowVolume();
-#endif
   
   glDisable(GL_LIGHT0);
   // disable shader //
@@ -252,15 +248,10 @@ void renderShadow() {
     objLoader.getMeshObj("scene")->initShadowVolume(lightPos);
     objects_or_lights_changed = false;
   }
-
-#if 0
-  objLoader.getMeshObj("scene")->renderShadowVolume();
-  return;
-#endif
   
   // TODO: disable rendering to screen and depth buffer //
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-//  glDepthMask(GL_FALSE);
+  glDepthMask(GL_FALSE);
   
   // TODO: enable stencil test and face culling //
   glEnable(GL_STENCIL_TEST);
@@ -333,23 +324,28 @@ void keyboardEvent(unsigned char key, int x, int y) {
     }
     case '8': {
       lightPos[2] -= 0.01;
+      objects_or_lights_changed = true;
       break;
     }
     case '2': {
       lightPos[2] += 0.01;
+      objects_or_lights_changed = true;
       break;
     }
     case '4': {
       lightPos[0] -= 0.01;
+      objects_or_lights_changed = true;
       break;
     }
     case '6': {
       lightPos[0] += 0.01;
+      objects_or_lights_changed = true;
       break;
     }
     case '5': {
       lightPos[0] = 0;
       lightPos[2] = 0;
+      objects_or_lights_changed = true;
       break;
     }
     case 'w': {
