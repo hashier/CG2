@@ -18,7 +18,6 @@
 
 void initGL();
 void initScene();
-// TODO: implement this method below //
 void initFBO();
 
 void resizeGL(int w, int h);
@@ -42,12 +41,11 @@ ObjLoader objLoader;
 // local shader for blur rendering //
 Shader *mBlurShader;
 
-// predefined FBO variables (Textures and FBO handle) //
+// FBO stuff //
 GLuint fboTexture[2];
 GLuint fboDepthTexture;
 GLuint fbo;
 
-// variabled controlling blur shader rendering //
 float focusDepth = 0.5f;
 float blurStrength = 5.0f;
 
@@ -121,19 +119,38 @@ void initScene() {
   material->setNormalTexture("textures/moon_normal.png");
   objLoader.getMeshObj("moon")->setMaterial(material);
   
-  // TODO: initialize and load your blur shader here //
+  mBlurShader = new Shader("shader/blurShader.vert", "shader/blurShader.frag");
 }
 
 void initFBO() {
-  // TODO: init OpenGL texture objects for color data and depth information          //
-  // Note that a shader cannot write into a texture and simultaneously read from it. //
-  // So when a color attachment of a FBO is enabled for writing, a shader cannot     //
-  // access the attached texture for reading. Thus you may want to initialize TWO    //
-  // textures that can be used in an alternating way (similar to ping-pong-buffering)//
+  // init color textures //
+  glGenTextures(2, fboTexture);
+  for (unsigned int i = 0; i < 2; ++i) {
+    glBindTexture(GL_TEXTURE_2D, fboTexture[i]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  }
+  // init depth texture //
+  glGenTextures(1, &fboDepthTexture);
+  glBindTexture(GL_TEXTURE_2D, fboDepthTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
   
-  // TODO: create FBO //
+  // generate FBO and depthBuffer //
+  glGenFramebuffers(1, &fbo);
   
-  // TODO: attach textures to FBO //
+  // attach textures to FBO //
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture[0], 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, fboTexture[1], 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fboDepthTexture, 0);
   
   // unbind FBO until it's needed //
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -164,8 +181,15 @@ void updateGL() {
 }
 
 void renderScene() {
-  // TODO: render scene into first color attachment of FBO -> use as filter texture later on //
+  // enable shader //
+  // light source //
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
   
+  // render scene into first color attachment of FBO -> use as filter texture later on //
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  glDepthMask(GL_TRUE);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
   // render actual scene objects //
@@ -180,24 +204,41 @@ void renderScene() {
     glPopMatrix(); 
   }
   
-  // TODO: enable blur shader //
+  // enable blur shader here //
+  mBlurShader->enable();
+  glDepthMask(GL_FALSE);
+  glUniform1f(glGetUniformLocation(mBlurShader->getProgramID(), "blurStrength"), blurStrength);
+  glUniform1f(glGetUniformLocation(mBlurShader->getProgramID(), "focusDepth"), focusDepth);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "width"), windowWidth);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, fboDepthTexture);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "depthImage"), 0);
   
-  // TODO: disable depth testing AND writing - we do not want to change the depth map recovered from the previous render pass //
   
-  // TODO: upload needed uniforms and pass your textures to the shader //
-  
-  // TODO: render first (horizontal) blur pass to second color attachment in FBO //
-  
+  // render first (horizontal) blur pass to second color attachment in FBO //
+  glDrawBuffer(GL_COLOR_ATTACHMENT1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  // update uniforms //
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, fboTexture[0]);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "inputImage"), 1);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "blurAxis"), 0);
   renderScreenFillingQuad();
   
-  // TODO: vertical blur depending on depth -> final rendering to screen //
-  
-  // TODO: update uniforms that may have changed (filter orientation, color texture data from last render pass) //
+  // vertical blur depending on depth -> final rendring to screen //
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  // update uniforms //
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, fboTexture[1]);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "inputImage"), 1);
+  glUniform1i(glGetUniformLocation(mBlurShader->getProgramID(), "blurAxis"), 1);
   renderScreenFillingQuad();
   
-  // TODO: disable blur shader and re-enable depth testing again //
+  mBlurShader->disable();
+  
+  
+  glDisable(GL_LIGHT0);
 }
 
 void renderShadow() {

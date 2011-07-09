@@ -143,3 +143,7 @@ void Shader::disable() {
 GLuint Shader::getProgramID() {
   return mShaderProgramID;
 }
+
+GLint Shader::getUniformLocation(const char *uniformName) {
+  return glGetUniformLocation(mShaderProgramID, uniformName);
+}

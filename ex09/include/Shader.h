@@ -28,6 +28,7 @@ class Shader {
     void disable();
     
     GLuint getProgramID();
+    GLint getUniformLocation(const char *uniformName);
 
   private:
     char* loadShaderSource(const char* fileName);
