@@ -10,14 +10,37 @@ struct ControlPoint {
     pos[2] = z;
     time = t;
   }
+  ControlPoint(const ControlPoint& cp) {
+    pos[0] = cp.pos[0];
+    pos[1] = cp.pos[1];
+    pos[2] = cp.pos[2];
+    time = cp.time;
+  }
+  ControlPoint& operator+=(const ControlPoint& cp) {
+    pos[0] += cp.pos[0];
+    pos[1] += cp.pos[1];
+    pos[2] += cp.pos[2];
+    time += cp.time;
+    return *this;
+  }
+  ControlPoint operator+(const ControlPoint& cp) const {
+    ControlPoint tmp(*this);
+    tmp += cp;
+    return tmp;
+  }
+  ControlPoint operator*(const int factor) {
+    return ControlPoint(factor * pos[0], factor * pos[1], factor * pos[2], factor * time);
+  }
+  ControlPoint operator/(const int factor) {
+    return ControlPoint(pos[0] / factor, pos[1] / factor, pos[2] / factor, time / factor);
+  }
   float pos[3];
   float time;
 };
 
 class Path {
   public:
-    Path();
-    Path(ControlPoint start, ControlPoint end, bool looped = false);
+    Path(ControlPoint start = ControlPoint(), ControlPoint end = ControlPoint(), bool looped = false);
     
     void setFirstControlPoint(ControlPoint point);
     void setLastControlPoint(ControlPoint point);
@@ -30,6 +53,8 @@ class Path {
   private:
     bool mIsLooped;
     std::vector<ControlPoint> mControlPoints;
+    float mMin_time;
+    float mMax_time;
 };
 
 #endif
