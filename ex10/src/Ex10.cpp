@@ -196,6 +196,18 @@ void renderScene() {
   // TODO: render your scene using the material shaders to your FBO into the first color attachment //
   //       only render the sun a depth values before rendering the other planets fully colored      //
   //       use mPath and mTimer to compute the planet's positions                                   //
+  // Matrix zurück setzen, dann evtl Rotation und Sonne
+  glLoadIdentity();
+  objLoader.getMeshObj("sun")->render();
+  // Rotation löschen, dafür Translation und Rotation um Sonne für Mars dann noch Mars rotieren
+  ControlPoint cp = mPath.getPositionForTime(mTimer.getTime());
+  const float radius_mars = 10;
+  glTranslatef(cp.pos[0] * radius_mars, cp.pos[1] * radius_mars, cp.pos[2] * radius_mars);
+  objLoader.getMeshObj("mars")->render();
+  // Letzte Rotation löschen und Translation und Rotation für Mond dann noch Mond rotieren
+  const float radius_moon = 1;
+  glTranslatef(cp.pos[0] * radius_moon, cp.pos[1] * radius_moon, cp.pos[2] * radius_moon);
+  objLoader.getMeshObj("moon")->render();
   
   // TODO: keep the current depth map and render the visible parts of sun to the second color attachment //
   
