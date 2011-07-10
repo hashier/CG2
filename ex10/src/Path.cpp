@@ -94,3 +94,8 @@ ControlPoint Path::getPositionForTime(float t) {
   
   return (tmp_points[0]*t*t*t + tmp_points[1]*t*t + tmp_points[2]*t + tmp_points[3])/2;
 }
+
+std::ostream& operator<<(std::ostream& stream, const ControlPoint& cp) {
+  stream << "X: " << cp.pos[0] << "Y: " << cp.pos[1] << "Z: " << cp.pos[2] << "tTime: " << cp.time;
+  return stream;
+}
