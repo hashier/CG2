@@ -32,6 +32,9 @@ struct ControlPoint {
   ControlPoint operator*(const int factor) {
     return ControlPoint(factor * pos[0], factor * pos[1], factor * pos[2], factor * time);
   }
+  ControlPoint operator*(const float factor) {
+    return ControlPoint(factor * pos[0], factor * pos[1], factor * pos[2], factor * time);
+  }
   ControlPoint operator/(const int factor) {
     return ControlPoint(pos[0] / factor, pos[1] / factor, pos[2] / factor, time / factor);
   }

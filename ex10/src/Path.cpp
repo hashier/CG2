@@ -45,9 +45,14 @@ bool Path::isLooped() {
   return mIsLooped;
 }
 
+#define DEBUGBLA
 ControlPoint Path::getPositionForTime(float t) {
-  // init return value //
-  ControlPoint P(0,0,0,t);
+#ifdef DEBUGBLA
+  std::cout << "  Path::getPositionForTime(float)" << '\n';
+  std::cout << "  Eingabezeit: " << t << '\n';
+  std::cout << "  Anfangszeit: " << mMin_time << '\n';
+  std::cout << "  Endzeit: " << mMax_time << '\n';
+#endif
   
   // DONE: check sanity of t and adapt if neccessary (path might be looped) //
   if (!isLooped()) {
@@ -66,6 +71,9 @@ ControlPoint Path::getPositionForTime(float t) {
     t -= count * diff;
   }
   assert(t >= mMin_time && t <= mMax_time);
+#ifdef DEBUGBLA
+  std::cout << "  Beschnittene Zeit: " << t << '\n';
+#endif
   
   // DONE: select correct control point segment for t //
   std::vector<ControlPoint>::iterator start_point = mControlPoints.begin();
@@ -78,8 +86,11 @@ ControlPoint Path::getPositionForTime(float t) {
     if (start_point == mControlPoints.end())
       start_point = mControlPoints.begin()+2;
     points[i] = *start_point;
+#ifdef DEBUGBLA
+    std::cout << "    Gewählter Punkt " << i << ": " << points[i] << '\n';
+#endif
   }  
-  
+ 
   // DONE: compute the interpolated point //
   char M[4][4] = {{-1,  3, -3,  1},
                   { 2, -5,  4, -1},
@@ -92,10 +103,38 @@ ControlPoint Path::getPositionForTime(float t) {
       tmp_points[i] += points[j] * M[i][j];
   }
   
-  return (tmp_points[0]*t*t*t + tmp_points[1]*t*t + tmp_points[2]*t + tmp_points[3])/2;
+  // init return value //
+  ControlPoint P(0,0,0,0);
+  
+  float the_power_of_t[4] = {t*t*t, t*t, t, 1.0f};
+  for (unsigned int i = 0; i < 4; i++) {
+    ControlPoint cp(tmp_points[i] * the_power_of_t[i]);
+    P += cp;
+#ifdef DEBUGBLA
+    std::cout << "  Temporärer Punkt " << i << ": " << tmp_points[i] << '\n';
+    std::cout << "  the power of t " << i << ": " << the_power_of_t[i] << '\n';
+    std::cout << "  Änderung: " << cp << '\n';
+    std::cout << "  Interpolierter Punkt(Zwischenstand): " << P << '\n';
+#endif
+  }
+
+#if 0
+  ControlPoint a(0,1,2,3);
+  ControlPoint b(4,5,6,7);
+  ControlPoint c = a*10 + b;
+  std::cout << c << std::endl;
+  std::cout << c/2 << std::endl;
+#endif
+
+  P = P/2;
+  P.time = t;
+#ifdef DEBUGBLA
+  std::cout << "  Interpolierter Punkt: " << P << std::endl;
+#endif
+  return P;
 }
 
 std::ostream& operator<<(std::ostream& stream, const ControlPoint& cp) {
-  stream << "X: " << cp.pos[0] << "Y: " << cp.pos[1] << "Z: " << cp.pos[2] << "tTime: " << cp.time;
+  stream << "X: " << cp.pos[0] << ", Y: " << cp.pos[1] << ", Z: " << cp.pos[2] << ", Time: " << cp.time;
   return stream;
 }

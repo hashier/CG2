@@ -206,15 +206,15 @@ void renderScene() {
   objLoader.getMeshObj("sun")->render();
   // Rotation löschen, dafür Translation und Rotation um Sonne für Mars dann noch Mars rotieren
   double time = mTimer.getTime();
-  ControlPoint cp = mPath.getPositionForTime(time/10);
-  std::cout << "Mars " << cp << std::endl;
+  std::cout << "Mars" << std::endl;
+  ControlPoint cp = mPath.getPositionForTime(time/2);
   const float radius_mars = 2;
   glTranslatef(cp.pos[0] * radius_mars, cp.pos[1] * radius_mars, cp.pos[2] * radius_mars);
   objLoader.getMeshObj("mars")->render();
   // Letzte Rotation löschen und Translation und Rotation für Mond dann noch Mond rotieren
+  std::cout << "Marsmond" << std::endl;
+  cp = mPath.getPositionForTime(1.4*time/2);
   const float radius_moon = 0.3;
-  cp = mPath.getPositionForTime(1.4*time/10);
-  std::cout << "Marsmond " << cp << std::endl;
   glTranslatef(cp.pos[0] * radius_moon, cp.pos[1] * radius_moon, cp.pos[2] * radius_moon);
   objLoader.getMeshObj("moon")->render();
 #endif
