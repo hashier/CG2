@@ -36,7 +36,7 @@ GLint windowWidth, windowHeight;
 GLfloat zNear, zFar;
 GLfloat fov;
 
-Trackball trackball(0, 0.4, 2);
+Trackball trackball(0, 0.4, 2+5);
 ObjLoader objLoader;
 
 // shaders //
@@ -197,17 +197,24 @@ void renderScene() {
   //       only render the sun a depth values before rendering the other planets fully colored      //
   //       use mPath and mTimer to compute the planet's positions                                   //
   // Matrix zurück setzen, dann evtl Rotation und Sonne
-  glLoadIdentity();
+//  glutSolidSphere(1,10,10);
+//  glutWireSphere(1,10,10);
+#if 1
   objLoader.getMeshObj("sun")->render();
   // Rotation löschen, dafür Translation und Rotation um Sonne für Mars dann noch Mars rotieren
-  ControlPoint cp = mPath.getPositionForTime(mTimer.getTime());
-  const float radius_mars = 10;
+  double time = mTimer.getTime();
+  ControlPoint cp = mPath.getPositionForTime(time/10);
+  std::cout << "Mars " << cp << std::endl;
+  const float radius_mars = 2;
   glTranslatef(cp.pos[0] * radius_mars, cp.pos[1] * radius_mars, cp.pos[2] * radius_mars);
   objLoader.getMeshObj("mars")->render();
   // Letzte Rotation löschen und Translation und Rotation für Mond dann noch Mond rotieren
-  const float radius_moon = 1;
+  const float radius_moon = 0.3;
+  cp = mPath.getPositionForTime(1.4*time/10);
+  std::cout << "Marsmond " << cp << std::endl;
   glTranslatef(cp.pos[0] * radius_moon, cp.pos[1] * radius_moon, cp.pos[2] * radius_moon);
   objLoader.getMeshObj("moon")->render();
+#endif
   
   // TODO: keep the current depth map and render the visible parts of sun to the second color attachment //
   
