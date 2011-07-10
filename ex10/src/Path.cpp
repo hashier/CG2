@@ -99,8 +99,11 @@ ControlPoint Path::getPositionForTime(float t) {
   ControlPoint tmp_points[4];
   for (unsigned int i = 0; i < 4; i++) {
     tmp_points[i] = points[0] * M[i][0];
-    for (unsigned int j = 1; j < 4; j++)
-      tmp_points[i] += points[j] * M[i][j];
+    tmp_points[i] += points[1] * M[i][1];
+    tmp_points[i] += points[2] * M[i][2];
+    tmp_points[i] += points[3] * M[i][3];
+//    for (unsigned int j = 1; j < 4; j++)
+//      tmp_points[i] += points[j] * M[i][j];
   }
   
   // init return value //
