@@ -169,6 +169,9 @@ void initFBO() {
 
 void updateGL() {
   GLfloat aspectRatio = (GLfloat)windowWidth / windowHeight;
+
+  // clear renderbuffer //
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
   glViewport(0, 0, windowWidth, windowHeight);
   
