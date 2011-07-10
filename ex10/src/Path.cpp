@@ -90,6 +90,10 @@ ControlPoint Path::getPositionForTime(float t) {
     std::cout << "    Gewählter Punkt " << i << ": " << points[i] << '\n';
 #endif
   }  
+  assert(points[0].time < t || points[0].time == -1);
+  assert(points[1].time <= t || points[1].time == -1);
+  assert(points[2].time >= t || points[2].time == -1);
+  assert(points[3].time > t || points[3].time == -1);
  
   // DONE: compute the interpolated point //
   char M[4][4] = {{-1,  3, -3,  1},
@@ -109,7 +113,8 @@ ControlPoint Path::getPositionForTime(float t) {
   // init return value //
   ControlPoint P(0,0,0,0);
   
-  float the_power_of_t[4] = {t*t*t, t*t, t, 1.0f};
+  float _t = t - points[1].time;
+  float the_power_of_t[4] = {_t*_t*_t, _t*_t, _t, 1.0f};
   for (unsigned int i = 0; i < 4; i++) {
     ControlPoint cp(tmp_points[i] * the_power_of_t[i]);
     P += cp;

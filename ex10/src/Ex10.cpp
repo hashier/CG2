@@ -108,6 +108,10 @@ int main (int argc, char **argv) {
   }
   mPath.setLooped(true);
   // ----------------------------------------- // 
+
+  std::cout << mPath.getPositionForTime(3.999) << std::endl;
+  std::cout << mPath.getPositionForTime(4.001) << std::endl;
+//  return 0;
   
   glutMainLoop();
   
@@ -202,7 +206,6 @@ void renderScene() {
   // Matrix zurück setzen, dann evtl Rotation und Sonne
 //  glutSolidSphere(1,10,10);
 //  glutWireSphere(1,10,10);
-#if 1
   objLoader.getMeshObj("sun")->render();
   // Rotation löschen, dafür Translation und Rotation um Sonne für Mars dann noch Mars rotieren
   double time = mTimer.getTime();
@@ -217,6 +220,8 @@ void renderScene() {
   const float radius_moon = 0.3;
   glTranslatef(cp.pos[0] * radius_moon, cp.pos[1] * radius_moon, cp.pos[2] * radius_moon);
   objLoader.getMeshObj("moon")->render();
+
+#if 0
 #endif
   
   // TODO: keep the current depth map and render the visible parts of sun to the second color attachment //
