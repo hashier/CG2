@@ -2,6 +2,7 @@
 #define __PATH__
 
 #include <vector>
+#include <ostream>
 
 struct ControlPoint {
   ControlPoint(float x = 0, float y = 0, float z = 0, float t = -1.0) {
@@ -31,12 +32,16 @@ struct ControlPoint {
   ControlPoint operator*(const int factor) {
     return ControlPoint(factor * pos[0], factor * pos[1], factor * pos[2], factor * time);
   }
+  ControlPoint operator*(const float factor) {
+    return ControlPoint(factor * pos[0], factor * pos[1], factor * pos[2], factor * time);
+  }
   ControlPoint operator/(const int factor) {
     return ControlPoint(pos[0] / factor, pos[1] / factor, pos[2] / factor, time / factor);
   }
   float pos[3];
   float time;
 };
+std::ostream& operator<<(std::ostream& stream, const ControlPoint& cp);
 
 class Path {
   public:
